@@ -9,7 +9,7 @@ package parser.tree;
 public abstract class Argument extends EtNode {
 
 	@Override
-	public Argument setParent(EtNode parent) {
+	public Argument setParent(final EtNode parent) {
 		return (Argument) super.setParent(parent);
 	}
 

@@ -4,9 +4,14 @@ import visitor.EtVisitor;
 
 public abstract class EtNode {
 	private EtNode parent;
-	private EtNode[] children;
+	private EtNodeChildren children;
 
 	public abstract boolean accept(final EtVisitor visitor);
+
+	@Override
+	public boolean equals(final Object obj) {
+		return super.equals(obj);
+	}
 
 	public EtNode getParent() {
 		return this.parent;
@@ -17,7 +22,7 @@ public abstract class EtNode {
 		return this;
 	}
 
-	public EtNode[] getChildren() {
+	public EtNodeChildren getChildren() {
 		return this.children;
 	}
 
@@ -27,7 +32,7 @@ public abstract class EtNode {
 //	}
 
 	public EtNode setChildrenNodes(final EtNode... children) {
-		this.children = children;
+		this.children = new EtNodeChildren(children);
 		return this;
 	}
 
@@ -39,17 +44,13 @@ public abstract class EtNode {
 //		}
 //	}
 
-//	public void replace(final EtNode node) {
-//		System.out.println("this:" + this.hashCode());
-//		final EtNode parent = this.getParent();
-//		this.setParent(null);
-//		node.setParent(parent);
-//
-//		for(int i=0; i<parent.children.length; i++) {
-//			System.out.println(parent.children[i]==this);
-//			parent.children[i] = parent.children[i]==this? node: parent.children[i];
-//		}
-//	}
+	public void replace(final EtNode node) {
+		final EtNode parent = this.getParent();
+		this.setParent(null);
+		node.setParent(parent);
+
+		parent.getChildren().replace(this, node);
+	}
 
 
 }
