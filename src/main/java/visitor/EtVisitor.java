@@ -1,16 +1,16 @@
 package visitor;
 
-import parser.tree.Condition;
-import parser.tree.Expression;
-import parser.tree.Expressions;
-import parser.tree.FactorExpression;
-import parser.tree.Function;
-import parser.tree.MainExpression;
-import parser.tree.NumberConstant;
-import parser.tree.PowerFactor;
-import parser.tree.Term;
-import parser.tree.Variable;
-import parser.tree.VariableConstant;
+import tree.Condition;
+import tree.Expression;
+import tree.Expressions;
+import tree.FactorExpression;
+import tree.Function;
+import tree.MainExpression;
+import tree.NumberConstant;
+import tree.PowerFactor;
+import tree.Term;
+import tree.Variable;
+import tree.VariableConstant;
 
 /**
  *

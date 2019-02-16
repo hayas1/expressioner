@@ -1,8 +1,8 @@
 package parser;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import binding.Bindings;
 import binding.ConstantBinding;
@@ -15,21 +15,21 @@ import lexer.tokens.Paren;
 import lexer.tokens.Separator;
 import lexer.tokens.Token;
 import lexer.tokens.VariableToken;
-import parser.tree.Argument;
-import parser.tree.Condition;
-import parser.tree.Constant;
-import parser.tree.EtNode;
-import parser.tree.Expression;
-import parser.tree.Expressions;
-import parser.tree.Factor;
-import parser.tree.FactorExpression;
-import parser.tree.Function;
-import parser.tree.MainExpression;
-import parser.tree.NumberConstant;
-import parser.tree.PowerFactor;
-import parser.tree.Term;
-import parser.tree.Variable;
-import parser.tree.VariableConstant;
+import tree.Argument;
+import tree.Condition;
+import tree.Constant;
+import tree.EtNode;
+import tree.Expression;
+import tree.Expressions;
+import tree.Factor;
+import tree.FactorExpression;
+import tree.Function;
+import tree.MainExpression;
+import tree.NumberConstant;
+import tree.PowerFactor;
+import tree.Term;
+import tree.Variable;
+import tree.VariableConstant;
 
 /**
  * ・条件 -> 主式 関係演算子 主式 <br>
@@ -54,31 +54,149 @@ import parser.tree.VariableConstant;
  */
 public class EtParser {
 	private final List<Token> tokens;
-	private final ListIterator<Token> iterator;
+	private final Iterator<Token> iterator;
 
 	private Token currentToken = null;
 
 	public EtParser(final List<Token> tokens) {
 		this.tokens = new ArrayList<>(tokens);
-		this.iterator = tokens.listIterator();
+		this.iterator = tokens.iterator();
+
+		getCurrentReadNext();
 	}
 
 	public List<Token> getTokens(){
 		return tokens;
 	}
 
-	public EtNode createConditionEt() {
-		getCurrentReadNext();
-		return condition(null);
+	public Condition createConditionEt() {
+		final Condition condition = condition(null);
+
+		if(!hasNextToken()) {
+			return condition;
+		} else {
+			throw new SyntaxException("not condition, unexpected token: ", iterator.next());
+		}
 	}
 
-	public EtNode createExpressionEt() {
-		getCurrentReadNext();
-		return mainExpression(null);
+	public MainExpression createMainExpressionEt() {
+		final MainExpression mainExpression = mainExpression(null);
+
+		if(!hasNextToken()) {
+			return mainExpression;
+		} else {
+			throw new SyntaxException("not main expression, unexpected token: ", iterator.next());
+		}
+
 	}
+
+	public Expression createExpressionEt() {
+		final Expression expression = expression(null);
+
+		if(!hasNextToken()) {
+			return expression;
+		} else {
+			throw new SyntaxException("not expression, unexpected token: ", iterator.next());
+		}
+	}
+
+	public Term createTermEt() {
+		final Term term = term(null);
+
+		if(!hasNextToken()) {
+			return term;
+		} else {
+			throw new SyntaxException("not term, unexpected token: ", iterator.next());
+		}
+	}
+
+	public PowerFactor createPowerFactorEt() {
+		final PowerFactor powerFactor = powerFactor(null);
+
+		if(!hasNextToken()) {
+			return powerFactor;
+		} else {
+			throw new SyntaxException("not power factor, unexpected token: ", iterator.next());
+		}
+	}
+
+	public Factor createFactorEt() {
+		final Factor factor = factor(null);
+
+		if(!hasNextToken()) {
+			return factor;
+		} else {
+			throw new SyntaxException("not factor, unexpected token: ", iterator.next());
+		}
+	}
+
+	public Constant createConstantEt() {
+		final Constant constant = constant(null);
+
+		if(!hasNextToken()) {
+			return constant;
+		} else {
+			throw new SyntaxException("not constant, unexpected token: ", iterator.next());
+		}
+	}
+
+	public NumberConstant createNumberConstEt() {
+		final NumberConstant numberConstant = numberConstant(null);
+
+		if(!hasNextToken()) {
+			return numberConstant;
+		} else {
+			throw new SyntaxException("not number constant, unexpected token: ", iterator.next());
+		}
+	}
+
+	public FactorExpression createFactorExpressionEt() {
+		final FactorExpression factorExpression = factorExpression(null);
+
+		if(!hasNextToken()) {
+			return factorExpression;
+		} else {
+			throw new SyntaxException("not factor expression, unexpected token: ", iterator.next());
+		}
+	}
+
+	public Function createFunctionEt() {
+		final Function function = function(null);
+
+		if(!hasNextToken()) {
+			return function;
+		} else {
+			throw new SyntaxException("not function, unexpected token: ", iterator.next());
+		}
+	}
+
+	public Argument createArgumentEt() {
+		final Argument argument = argument(null);
+
+		if(!hasNextToken()) {
+			return argument;
+		} else {
+			throw new SyntaxException("not argument, unexpected token: ", iterator.next());
+		}
+	}
+
+	public Expressions createExpressionsEt() {
+		final Expressions expressions = expressions(null);
+
+		if(!hasNextToken()) {
+			return expressions;
+		} else {
+			throw new SyntaxException("not expressions, unexpected token: ", iterator.next());
+		}
+	}
+
 
 	protected Token getCurrentToken() {
 		return currentToken;
+	}
+
+	protected boolean hasNextToken() {
+		return iterator.hasNext();
 	}
 
 	protected Token getCurrentReadNext() {
@@ -90,6 +208,8 @@ public class EtParser {
 		}
 		return currentToken;
 	}
+
+
 
 	//condition() -> mainExpression() relationalOperator() mainExpression()
 	protected Condition condition(final EtNode parent) {

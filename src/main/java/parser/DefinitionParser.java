@@ -9,14 +9,14 @@ import lexer.tokens.FunctionToken;
 import lexer.tokens.Paren;
 import lexer.tokens.Token;
 import lexer.tokens.VariableToken;
-import parser.tree.Condition;
-import parser.tree.ConstantDefinition;
-import parser.tree.Constants;
-import parser.tree.DefinitionNode;
-import parser.tree.EtNode;
-import parser.tree.FunctionDefinition;
-import parser.tree.VariableDefinition;
-import parser.tree.Variables;
+import tree.Condition;
+import tree.ConstantDefinition;
+import tree.Constants;
+import tree.DefinitionNode;
+import tree.EtNode;
+import tree.FunctionDefinition;
+import tree.VariableDefinition;
+import tree.Variables;
 
 /**
  * ・定義 -> 変数定義 | 定数定義 | 関数定義 <br>

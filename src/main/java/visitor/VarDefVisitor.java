@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import lexer.tokens.VariableToken;
-import parser.tree.Variable;
-import parser.tree.VariableDefinition;
-import parser.tree.Variables;
+import tree.Variable;
+import tree.VariableDefinition;
+import tree.Variables;
 
 /**
  *

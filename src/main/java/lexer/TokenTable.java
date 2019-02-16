@@ -2,9 +2,10 @@ package lexer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import io.Inputer;
 import lexer.tokens.Token;
@@ -123,39 +124,14 @@ public class TokenTable {
 		}
 	}
 
-	public List<String> getDefinedOperands() {
-		final List<String> userDefined = this.userDefined.keySet()
-				.stream()
-				.map(String::new)
-				.collect(Collectors.toList());
-		final List<String> defined = operands.keySet()
-				.stream()
-				.map(String::new)
-				.collect(Collectors.toList());
+	public List<String> getDefinedAllTokens(){
+		final Set<String> newSet = new HashSet<>();
+		newSet.addAll(this.tokens.keySet());
+		newSet.addAll(this.operators.keySet());
+		newSet.addAll(this.operands.keySet());
+		newSet.addAll(this.userDefined.keySet());
 
-		final List<String> allDefined = new ArrayList<>();
-		allDefined.addAll(userDefined);
-		allDefined.addAll(defined);
-		return allDefined;
-	}
-
-	public List<String> getDefinedConstants() {
-		return getDefined(Token.CONSTANT);
-	}
-
-	public List<String> getDefinedVariables() {
-		return getDefined(Token.VARIABLE);
-	}
-
-	public List<String> getDefinedFunctions() {
-		return getDefined(Token.FUNCTION);
-	}
-
-	public List<String> getDefined(final String kind) {
-		return getDefinedOperands()
-				.stream()
-				.filter(str -> !operands.get(str).equals(kind))
-				.collect(Collectors.toList());
+		return new ArrayList<>(newSet);
 	}
 
 }

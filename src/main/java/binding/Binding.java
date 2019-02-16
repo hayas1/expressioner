@@ -1,6 +1,6 @@
 package binding;
 
-import parser.tree.DefinitionNode;
+import tree.DefinitionNode;
 
 public abstract class Binding {
 	private final DefinitionNode definition;

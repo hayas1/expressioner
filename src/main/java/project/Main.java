@@ -5,7 +5,7 @@ import java.util.List;
 import lexer.Lexer;
 import lexer.tokens.Token;
 import parser.EtParser;
-import parser.tree.EtNode;
+import tree.EtNode;
 import visitor.EtVisitor;
 
 public class Main {
@@ -19,15 +19,17 @@ public class Main {
 		String expression5 = "x1y+x2=0";
 		String expression6 = "100.12";
 		String expression7 = "10xsin10=100";
+		String expression8 = "100+x = 20";
+		String expression9 = "100a/20(10/40b)=x";
 
 
-		List<Token> tokens = new Lexer(expression7).tokenize();
+		List<Token> tokens = new Lexer(expression9).tokenize();
 		EtNode expression = new EtParser(tokens).createConditionEt();
 		System.out.println(expression);
 
 		EtVisitor testVisitor = new EtVisitor() {
-			public boolean visit(parser.tree.Variable node) {
-				node.replace(new EtParser(new Lexer("a+b+c").tokenize()).createExpressionEt());
+			public boolean visit(tree.Variable node) {
+				node.replace(new EtParser(new Lexer("(a+b+c)").tokenize()).createFactorEt());
 				return super.visit(node);
 			}
 		};

@@ -93,7 +93,7 @@ public abstract class Token {
 		} else if(isValidDigit(name)||isValidName(name)) {
 			return createInference(name);
 		} else {
-			throw new TokenNameException("space cannot convert to token");
+			throw new TokenNameException("cannot create token, invalid name: " + name);
 		}
 	}
 
