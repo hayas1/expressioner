@@ -29,7 +29,7 @@ public class VariableConstant extends Constant {
 	public VariableConstant setChildren(final ConstantToken constantToken) {
 		setConstantToken(constantToken);
 
-		return (VariableConstant) super.setChildrenNodes();
+		return this;
 	}
 
 	@Override

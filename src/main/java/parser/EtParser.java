@@ -1,8 +1,8 @@
 package parser;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import binding.Bindings;
 import binding.ConstantBinding;
@@ -54,28 +54,79 @@ import parser.tree.VariableConstant;
  */
 public class EtParser {
 	private final List<Token> tokens;
-	private final ListIterator<Token> iterator;
+	private final Iterator<Token> iterator;
 
 	private Token currentToken = null;
 
 	public EtParser(final List<Token> tokens) {
 		this.tokens = new ArrayList<>(tokens);
-		this.iterator = tokens.listIterator();
+		this.iterator = tokens.iterator();
 	}
 
 	public List<Token> getTokens(){
 		return tokens;
 	}
 
-	public EtNode createConditionEt() {
+	public Condition createConditionEt() {
 		getCurrentReadNext();
 		return condition(null);
 	}
 
-	public EtNode createExpressionEt() {
+	public MainExpression createMainExpressionEt() {
 		getCurrentReadNext();
 		return mainExpression(null);
 	}
+
+	public Expression createExpressionEt() {
+		getCurrentReadNext();
+		return expression(null);
+	}
+
+	public Term createTermEt() {
+		getCurrentReadNext();
+		return term(null);
+	}
+
+	public PowerFactor createPowerFactorEt() {
+		getCurrentReadNext();
+		return powerFactor(null);
+	}
+
+	public Factor createFactorEt() {
+		getCurrentReadNext();
+		return factor(null);
+	}
+
+	public Constant createConstantEt() {
+		getCurrentReadNext();
+		return constant(null);
+	}
+
+	public NumberConstant createNumberConstEt() {
+		getCurrentReadNext();
+		return numberConstant(null);
+	}
+
+	public FactorExpression createFactorExpressionEt() {
+		getCurrentReadNext();
+		return factorExpression(null);
+	}
+
+	public Function createFunctionEt() {
+		getCurrentReadNext();
+		return function(null);
+	}
+
+	public Argument createArgumentEt() {
+		getCurrentReadNext();
+		return argument(null);
+	}
+
+	public Expressions createExpressionsEt() {
+		getCurrentReadNext();
+		return expressions(null);
+	}
+
 
 	protected Token getCurrentToken() {
 		return currentToken;

@@ -11,7 +11,7 @@ import visitor.EtVisitor;
  */
 public class FactorExpression extends Factor {
 	private Paren leftParen;
-	private MainExpression expression;
+	private final static int MAIN_EXPRESSION = 0;
 	private Paren rightParen;
 
 
@@ -33,7 +33,7 @@ public class FactorExpression extends Factor {
 		setExpression(expression);
 		setRightParen(rightParen);
 
-		return (FactorExpression)super.setChildrenNodes(expression);
+		return this;
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public class FactorExpression extends Factor {
 	}
 
 	public MainExpression getExpression() {
-		return expression;
+		return (MainExpression)super.getChild(MAIN_EXPRESSION);
 	}
 
 	public FactorExpression setExpression(final MainExpression expression) {
 		if(expression != null) {
-			this.expression = expression;
+			super.setChild(MAIN_EXPRESSION, expression);
 		} else {
 			throw new NodeTypeException("don't allow null expression");
 		}

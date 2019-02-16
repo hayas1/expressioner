@@ -4,13 +4,18 @@ import visitor.EtVisitor;
 
 public abstract class EtNode {
 	private EtNode parent;
-	private EtNodeChildren children;
+	private EtNodeList children = new EtNodeList();
 
 	public abstract boolean accept(final EtVisitor visitor);
 
 	@Override
 	public boolean equals(final Object obj) {
 		return super.equals(obj);
+	}
+
+	@Override
+	public String toString() {
+		return getChildren().toString();
 	}
 
 	public EtNode getParent() {
@@ -22,27 +27,23 @@ public abstract class EtNode {
 		return this;
 	}
 
-	public EtNodeChildren getChildren() {
+	public EtNodeList getChildren() {
 		return this.children;
 	}
 
-//	public EtNode setChildrenNodes(final List<EtNode> children) {
-//		this.children = children;
-//		return this;
-//	}
+	public EtNode getChild(final int index) {
+		return getChildren().get(index);
+	}
 
 	public EtNode setChildrenNodes(final EtNode... children) {
-		this.children = new EtNodeChildren(children);
+		this.children = new EtNodeList(children);
 		return this;
 	}
 
-//	public void removeChild(final EtNode node) {
-//		if(getChildren().contains(node)) {
-//			getChildren().remove(node);
-//		} else {
-//			throw new NodeTypeException("the node is not this node's child: " + node.toString());
-//		}
-//	}
+	public EtNode setChild(final int index, final EtNode child) {
+		this.children.set(index, child);
+		return this;
+	}
 
 	public void replace(final EtNode node) {
 		final EtNode parent = this.getParent();

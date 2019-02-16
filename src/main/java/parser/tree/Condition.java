@@ -11,9 +11,9 @@ import visitor.EtVisitor;
  */
 
 public class Condition extends EtNode {
-	private MainExpression leftHandSide;
+	private final static int LEFT_HAND_SIDE = 0;
 	private Operator relationalOperator;
-	private MainExpression rightHandSide;
+	private final static int RIGHT_HAND_SIDE = 1;
 
 	@Override
 	public boolean accept(final EtVisitor visitor) {
@@ -34,7 +34,7 @@ public class Condition extends EtNode {
 		setRelationalOperator(operator);
 		setRightHandSide(rightHandSide);
 
-		return (Condition) super.setChildrenNodes(leftHandSide, rightHandSide);
+		return this;
 	}
 
 	@Override
@@ -44,12 +44,12 @@ public class Condition extends EtNode {
 
 
 	public MainExpression getLeftHandSide() {
-		return leftHandSide;
+		return (MainExpression)super.getChild(LEFT_HAND_SIDE);
 	}
 
 	public Condition setLeftHandSide(final MainExpression leftHandSide) {
 		if(leftHandSide != null) {
-			this.leftHandSide = leftHandSide;
+			super.setChild(LEFT_HAND_SIDE, leftHandSide);
 		} else {
 			throw new NodeTypeException("don't allow null left hand side expression");
 		}
@@ -70,21 +70,16 @@ public class Condition extends EtNode {
 	}
 
 	public MainExpression getRightHandSide() {
-		return rightHandSide;
+		return (MainExpression)super.getChild(RIGHT_HAND_SIDE);
 	}
 
-	public Condition setRightHandSide(MainExpression rightHandSide) {
+	public Condition setRightHandSide(final MainExpression rightHandSide) {
 		if(rightHandSide != null) {
-			this.rightHandSide = rightHandSide;
+			super.setChild(RIGHT_HAND_SIDE, rightHandSide);
 		} else {
 			throw new NodeTypeException("don't allow null right hand side expression");
 		}
 		return this;
 	}
-
-
-
-
-
 
 }

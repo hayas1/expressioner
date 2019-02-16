@@ -10,9 +10,9 @@ import visitor.EtVisitor;
  *
  */
 public class Expression extends EtNode {
-	private Term term;
+	private static final int TERM = 0;
 	private Operator operator;
-	private Expression expression;
+	private static final int EXPRESSION = 1;
 
 
 	@Override
@@ -37,7 +37,7 @@ public class Expression extends EtNode {
 		setOperator(operator);
 		setExpression(expression);
 
-		return (Expression)super.setChildrenNodes(term, expression);
+		return this;
 	}
 
 	@Override
@@ -51,12 +51,12 @@ public class Expression extends EtNode {
 
 
 	public Term getTerm() {
-		return term;
+		return (Term)super.getChild(TERM);
 	}
 
 	public Expression setTerm(final Term term) {
 		if(term != null) {
-			this.term = term;
+			super.setChild(TERM, term);
 		} else {
 			throw new NodeTypeException("don't allow null term");
 		}
@@ -89,11 +89,11 @@ public class Expression extends EtNode {
 	}
 
 	public Expression getExpression() {
-		return expression;
+		return (Expression)super.getChild(EXPRESSION);
 	}
 
 	public Expression setExpression(final Expression expression) {
-		this.expression = expression;
+		super.setChild(EXPRESSION, expression);
 		return this;
 	}
 

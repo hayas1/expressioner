@@ -36,10 +36,10 @@ public class Constants extends DefinitionNode {
 
 	public Constants setChildren(final Paren leftParen, final List<ConstantToken> constants, final Paren rightParen) {
 		setLeftParen(leftParen);
-		this.constants = constants;		//setConstants call this
+		setConstants(constants);
 		setRightParen(rightParen);
 
-		return (Constants) super.setChildrenNodes();
+		return this;
 	}
 
 	@Override
@@ -74,7 +74,6 @@ public class Constants extends DefinitionNode {
 	public Constants setConstants(final List<ConstantToken> constants) {
 		if(constants != null) {
 			this.constants = constants;
-			setChildren(this.leftParen, constants, this.rightParen);
 		} else {
 			throw new NodeTypeException("don't allow null constant");
 		}

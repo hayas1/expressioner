@@ -19,9 +19,10 @@ public class Main {
 		String expression5 = "x1y+x2=0";
 		String expression6 = "100.12";
 		String expression7 = "10xsin10=100";
+		String expression8 = "100+x = 20";
 
 
-		List<Token> tokens = new Lexer(expression7).tokenize();
+		List<Token> tokens = new Lexer(expression8).tokenize();
 		EtNode expression = new EtParser(tokens).createConditionEt();
 		System.out.println(expression);
 

@@ -28,8 +28,8 @@ public class Variable extends Factor {
 	}
 
 	public Variable setChildren(final VariableToken variableToken) {
-		this.token = variableToken;
-		return (Variable) super.setChildrenNodes();
+		setVariableToken(variableToken);
+		return this;
 	}
 
 	@Override
@@ -41,8 +41,8 @@ public class Variable extends Factor {
 		return token;
 	}
 
-	public Variable setToken(final VariableToken token) {
-		if(token.isConstant()) {
+	public Variable setVariableToken(final VariableToken token) {
+		if(token.isVariable()) {
 			this.token = token;
 		} else {
 			throw new NodeTypeException("not variable token: " + token);

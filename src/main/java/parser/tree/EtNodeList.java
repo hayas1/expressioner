@@ -4,15 +4,16 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class EtNodeChildren extends AbstractList<EtNode> {
+public class EtNodeList extends AbstractList<EtNode> {
 	private final List<EtNode> nodes;
 
-	public EtNodeChildren() {
+	public EtNodeList() {
 		this.nodes = new ArrayList<>();
 	}
 
-	public EtNodeChildren(final EtNode... nodes) {
+	public EtNodeList(final EtNode... nodes) {
 		this.nodes = Arrays.asList(nodes);
 	}
 
@@ -33,7 +34,20 @@ public class EtNodeChildren extends AbstractList<EtNode> {
 
 	@Override
 	public EtNode set(final int index, final EtNode element) {
-		return nodes.set(index, element);
+		if(index == nodes.size()) {
+			nodes.add(element);
+			return null;
+		} else {
+			return nodes.set(index, element);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return nodes
+				.stream()
+				.map(EtNode::toString)
+				.collect(Collectors.joining());
 	}
 
 
@@ -46,11 +60,16 @@ public class EtNodeChildren extends AbstractList<EtNode> {
 	public int replace(final EtNode target, final EtNode element) {
 		if(super.contains(target)) {
 			final int index = indexOf(target);
-			super.set(index, element);
+			set(index, element);
 			return index;
 		} else {
 			return -1;
 		}
+	}
+
+
+	public List<MainExpression> castExpressions() {
+		return Arrays.asList(nodes.toArray(new MainExpression[nodes.size()]));
 	}
 
 

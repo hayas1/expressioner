@@ -14,8 +14,8 @@ import visitor.DefinitionVisitor;
 public class ConstantDefinition extends DefinitionNode {
 	private Controller def;
 	private Controller newToken;
-	private Constants constants;
-	private Condition condition;
+	private final static int CONSTANTS = 0;
+	private final static int CONDITION = 1;
 
 
 	@Override
@@ -46,7 +46,7 @@ public class ConstantDefinition extends DefinitionNode {
 		setConstants(constants);
 		setCondition(condition);
 
-		return (ConstantDefinition) super.setChildrenNodes(constants, condition);
+		return this;
 	}
 
 	@Override
@@ -84,12 +84,12 @@ public class ConstantDefinition extends DefinitionNode {
 	}
 
 	public Constants getconstants() {
-		return constants;
+		return (Constants)super.getChild(CONSTANTS);
 	}
 
 	public ConstantDefinition setConstants(final Constants constants) {
 		if(constants != null) {
-			this.constants = constants;
+			super.setChild(CONSTANTS, constants);
 		} else {
 			throw new NodeTypeException("don't allow null constants");
 		}
@@ -101,11 +101,11 @@ public class ConstantDefinition extends DefinitionNode {
 	}
 
 	public Condition getCondition() {
-		return condition;
+		return (Condition)super.getChild(CONDITION);
 	}
 
 	public ConstantDefinition setCondition(final Condition condition) {
-		this.condition = condition;
+		super.setChild(CONDITION, condition);
 		return this;
 	}
 }

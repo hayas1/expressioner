@@ -36,10 +36,10 @@ public class Variables extends DefinitionNode {
 
 	public Variables setChildren(final Paren leftParen, final List<VariableToken> variables, final Paren rightParen) {
 		setLeftParen(leftParen);
-		this.variables = variables;		//setVariables call this
+		setVariables(variables);
 		setRightParen(rightParen);
 
-		return (Variables) super.setChildrenNodes(variables.toArray(new EtNode[variables.size()]));
+		return this;
 	}
 
 	@Override
@@ -74,7 +74,6 @@ public class Variables extends DefinitionNode {
 	public Variables setVariables(final List<VariableToken> variables) {
 		if(variables != null) {
 			this.variables = variables;
-			setChildren(this.leftParen, variables, this.rightParen);
 		} else {
 			throw new NodeTypeException("don't allow null variable");
 		}

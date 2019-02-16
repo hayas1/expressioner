@@ -10,9 +10,9 @@ import visitor.EtVisitor;
  *
  */
 public class PowerFactor extends Argument {
-	private Factor factor;
+	private static final int FACTOR = 0;
 	private Operator operator;
-	private PowerFactor powerFactor;
+	private static final int POWER_FACTOR = 1;
 
 
 	@Override
@@ -37,7 +37,7 @@ public class PowerFactor extends Argument {
 		setOperator(operator);
 		setPowerFactor(powerFactor);
 
-		return (PowerFactor) super.setChildrenNodes(factor, powerFactor);
+		return this;
 	}
 
 	@Override
@@ -50,12 +50,12 @@ public class PowerFactor extends Argument {
 	}
 
 	public Factor getFactor() {
-		return factor;
+		return (Factor)super.getChild(FACTOR);
 	}
 
 	public PowerFactor setFactor(final Factor factor) {
 		if(factor != null) {
-			this.factor = factor;
+			super.setChild(FACTOR, factor);
 		} else {
 			throw new NodeTypeException("don't allow null factor");
 		}
@@ -88,11 +88,11 @@ public class PowerFactor extends Argument {
 	}
 
 	public PowerFactor getPowerFactor() {
-		return powerFactor;
+		return (PowerFactor)super.getChild(POWER_FACTOR);
 	}
 
 	public PowerFactor setPowerFactor(PowerFactor powerFactor) {
-		this.powerFactor = powerFactor;
+		super.setChild(POWER_FACTOR, powerFactor);
 		return this;
 	}
 

@@ -17,8 +17,8 @@ public class FunctionDefinition extends DefinitionNode {
 	private Controller def;
 	private Controller newToken;
 	private FunctionToken function;
-	private Variables variables;
-	private Condition condition;
+	private static final int VARIABLES = 0;
+	private static final int CONDITION = 1;
 
 
 	@Override
@@ -50,7 +50,7 @@ public class FunctionDefinition extends DefinitionNode {
 		setVariables(variables);
 		setCondition(condition);
 
-		return (FunctionDefinition) super.setChildrenNodes(variables);
+		return this;
 	}
 
 	@Override
@@ -101,12 +101,12 @@ public class FunctionDefinition extends DefinitionNode {
 	}
 
 	public Variables getVariables() {
-		return variables;
+		return (Variables)super.getChild(VARIABLES);
 	}
 
 	public FunctionDefinition setVariables(final Variables variables) {
 		if(variables != null) {
-			this.variables = variables;
+			super.setChild(VARIABLES, variables);
 		} else {
 			throw new NodeTypeException("don't allow null variables");
 		}
@@ -118,11 +118,11 @@ public class FunctionDefinition extends DefinitionNode {
 	}
 
 	public Condition getCondition() {
-		return condition;
+		return (Condition)super.getChild(CONDITION);
 	}
 
 	public FunctionDefinition setCondition(final Condition condition) {
-		this.condition = condition;
+		super.setChild(CONDITION, condition);
 		return this;
 	}
 

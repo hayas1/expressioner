@@ -16,7 +16,7 @@ import visitor.EtVisitor;
 public class Function extends Factor {
 	private FunctionToken functionToken;
 	private Operator prime;
-	private Argument argument;
+	private static final int ARGUMENT = 0;
 
 
 	@Override
@@ -37,7 +37,7 @@ public class Function extends Factor {
 		setPrime(prime);
 		setArgument(argument);
 
-		return (Function)super.setChildrenNodes(argument);
+		return this;
 	}
 
 	@Override
@@ -81,12 +81,12 @@ public class Function extends Factor {
 	}
 
 	public Argument getArgument() {
-		return argument;
+		return (Argument)super.getChild(ARGUMENT);
 	}
 
 	public Function setArgument(final Argument argument) {
 		if(argument != null) {
-			this.argument = argument;
+			super.setChild(ARGUMENT, argument);
 		} else {
 			throw new NodeTypeException("don't allow null argument function");
 		}

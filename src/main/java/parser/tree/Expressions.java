@@ -16,13 +16,12 @@ import visitor.EtVisitor;
 
 public class Expressions extends Argument {
 	private Paren leftParen;
-	private List<MainExpression> expressions;
 	private Paren rightParen;
 
 	@Override
 	public boolean accept(final EtVisitor visitor) {
 		if(visitor.visit(this)) {
-			expressions.forEach(exp -> exp.accept(visitor));
+			getExpressions().forEach(exp -> exp.accept(visitor));
 		}
 		return visitor.leave(this);
 	}
@@ -34,15 +33,15 @@ public class Expressions extends Argument {
 
 	public Expressions setChildren(final Paren leftParen, final List<MainExpression> expressions, final Paren rightParen) {
 		setLeftParen(leftParen);
-		this.expressions = expressions;		//setExpressions call this
+		setExpressions(expressions);
 		setRightParen(rightParen);
 
-		return (Expressions) super.setChildrenNodes(expressions.toArray(new EtNode[expressions.size()]));
+		return this;
 	}
 
 	@Override
 	public String toString() {
-		final String row = expressions
+		final String row = getExpressions()
 				.stream()
 				.map(MainExpression::toString)
 				.collect(Collectors.joining(Separator.COMMA + " "));
@@ -64,13 +63,12 @@ public class Expressions extends Argument {
 	}
 
 	public List<MainExpression> getExpressions() {
-		return expressions;
+		return super.getChildren().castExpressions();
 	}
 
 	public Expressions setExpressions(final List<MainExpression> expressions) {
 		if(expressions != null) {
-			this.expressions = expressions;
-			setChildren(this.leftParen, expressions, this.rightParen);
+			super.setChildrenNodes(expressions.toArray(new EtNode[expressions.size()]));
 		} else {
 			throw new NodeTypeException("don't allow null expressions");
 		}

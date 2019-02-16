@@ -33,7 +33,7 @@ public class NumberConstant extends Constant {
 		setPoint(point);
 		setDecimal(decimal);
 
-		return (NumberConstant)super.setChildrenNodes();
+		return this;
 	}
 
 	@Override

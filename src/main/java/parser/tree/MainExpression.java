@@ -11,7 +11,7 @@ import visitor.EtVisitor;
  */
 public class MainExpression extends EtNode{
 	private Operator sign;
-	private Expression expression;
+	private static final int EXPRESSION = 0;
 
 
 	@Override
@@ -31,7 +31,7 @@ public class MainExpression extends EtNode{
 		setSign(sign);
 		setExpression(expression);
 
-		return (MainExpression)super.setChildrenNodes(expression);
+		return this;
 	}
 
 	@Override
@@ -61,12 +61,12 @@ public class MainExpression extends EtNode{
 	}
 
 	public Expression getExpression() {
-		return expression;
+		return (Expression)super.getChild(EXPRESSION);
 	}
 
 	public MainExpression setExpression(final Expression expression) {
 		if(expression != null) {
-			this.expression = expression;
+			super.setChild(EXPRESSION, expression);
 		} else {
 			throw new NodeTypeException("don't allow null expression");
 		}

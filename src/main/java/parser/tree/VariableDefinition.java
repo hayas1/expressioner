@@ -14,8 +14,8 @@ public class VariableDefinition extends DefinitionNode {
 
 	private Controller def;
 	private Controller newToken;
-	private Variables variables;
-	private Condition condition;
+	private static final int VARIABLES = 0;
+	private static final int CONDITION = 1;
 
 
 	@Override
@@ -84,12 +84,12 @@ public class VariableDefinition extends DefinitionNode {
 	}
 
 	public Variables getVariables() {
-		return variables;
+		return (Variables)super.getChild(VARIABLES);
 	}
 
 	public VariableDefinition setVariables(final Variables variables) {
 		if(variables != null) {
-			this.variables = variables;
+			super.setChild(VARIABLES, variables);
 		} else {
 			throw new NodeTypeException("don't allow null variables");
 		}
@@ -101,11 +101,11 @@ public class VariableDefinition extends DefinitionNode {
 	}
 
 	public Condition getCondition() {
-		return condition;
+		return (Condition)super.getChild(CONDITION);
 	}
 
 	public VariableDefinition setCondition(final Condition condition) {
-		this.condition = condition;
+		super.setChild(CONDITION, condition);
 		return this;
 	}
 

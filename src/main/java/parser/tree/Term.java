@@ -9,9 +9,9 @@ import visitor.EtVisitor;
  *
  */
 public class Term extends EtNode {
-	private PowerFactor factor;
+	private static final int POWER_FACTOR = 0;
 	private Operator operator;
-	private Term term;
+	private static final int TERM = 1;
 
 
 	@Override
@@ -35,7 +35,7 @@ public class Term extends EtNode {
 		setOperator(operator);
 		setTerm(term);
 
-		return (Term) super.setChildrenNodes(factor, term);
+		return this;
 	}
 
 	@Override
@@ -50,12 +50,12 @@ public class Term extends EtNode {
 	}
 
 	public PowerFactor getFactor() {
-		return factor;
+		return (PowerFactor)super.getChild(POWER_FACTOR);
 	}
 
 	public Term setFactor(final PowerFactor factor) {
 		if(factor != null) {
-			this.factor = factor;
+			super.setChild(POWER_FACTOR, factor);
 		} else {
 			throw new NodeTypeException("don't allow null factor");
 		}
@@ -96,11 +96,11 @@ public class Term extends EtNode {
 	}
 
 	public Term getTerm() {
-		return term;
+		return (Term)super.getChild(TERM);
 	}
 
 	public Term setTerm(final Term term) {
-		this.term = term;
+		super.setChild(TERM, term);
 		return this;
 	}
 
