@@ -1,6 +1,6 @@
 package binding;
 
-import parser.tree.FunctionDefinition;
+import tree.FunctionDefinition;
 
 public class FunctionBinding extends Binding {
 

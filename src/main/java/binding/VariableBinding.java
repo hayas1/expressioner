@@ -1,6 +1,6 @@
 package binding;
 
-import parser.tree.VariableDefinition;
+import tree.VariableDefinition;
 
 public class VariableBinding extends Binding{
 

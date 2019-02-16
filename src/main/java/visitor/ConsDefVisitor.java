@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import lexer.tokens.ConstantToken;
-import parser.tree.ConstantDefinition;
-import parser.tree.Constants;
-import parser.tree.Variable;
-import parser.tree.VariableConstant;
+import tree.ConstantDefinition;
+import tree.Constants;
+import tree.Variable;
+import tree.VariableConstant;
 
 /**
  *

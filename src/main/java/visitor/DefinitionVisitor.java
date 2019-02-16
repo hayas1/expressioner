@@ -1,10 +1,10 @@
 package visitor;
 
-import parser.tree.ConstantDefinition;
-import parser.tree.Constants;
-import parser.tree.FunctionDefinition;
-import parser.tree.VariableDefinition;
-import parser.tree.Variables;
+import tree.ConstantDefinition;
+import tree.Constants;
+import tree.FunctionDefinition;
+import tree.VariableDefinition;
+import tree.Variables;
 
 public class DefinitionVisitor extends EtVisitor{
 

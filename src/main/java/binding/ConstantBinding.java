@@ -1,6 +1,6 @@
 package binding;
 
-import parser.tree.ConstantDefinition;
+import tree.ConstantDefinition;
 
 public class ConstantBinding extends Binding {
 
