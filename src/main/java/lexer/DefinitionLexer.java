@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lexer.tokens.Controller;
-import lexer.tokens.Token;
+import token.Controller;
+import token.Token;
 
 public class DefinitionLexer extends Lexer {
 

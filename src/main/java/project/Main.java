@@ -3,8 +3,8 @@ package project;
 import java.util.List;
 
 import lexer.Lexer;
-import lexer.tokens.Token;
 import parser.EtParser;
+import token.Token;
 import tree.EtNode;
 import visitor.EtVisitor;
 
@@ -12,6 +12,7 @@ public class Main {
 
 
 	public static void main(final String[] args) {
+		String expressiontmp = "1*(2*3)=6";
 		String expression1 = "100x^2 + 11x+10=0";
 		String expression2 = "100x^2+11x+10>=0";
 		String expression3 = "100xyz+x=0";
@@ -23,13 +24,14 @@ public class Main {
 		String expression9 = "100a/20(10/40b)=x";
 
 
-		List<Token> tokens = new Lexer(expression9).tokenize();
+
+		List<Token> tokens = new Lexer(expressiontmp).tokenize();
 		EtNode expression = new EtParser(tokens).createConditionEt();
 		System.out.println(expression);
 
 		EtVisitor testVisitor = new EtVisitor() {
-			public boolean visit(tree.Variable node) {
-				node.replace(new EtParser(new Lexer("(a+b+c)").tokenize()).createFactorEt());
+			public boolean visit(tree.FactorExpression node) {
+				node.parenRemove();
 				return super.visit(node);
 			}
 		};

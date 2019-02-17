@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.Inputer;
-import lexer.tokens.Token;
+import token.Token;
 
 public class TokenTable {
 	public static String OPERANDS_CSV_PATH = "data/definedOperand.csv";

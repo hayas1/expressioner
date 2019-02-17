@@ -1,4 +1,4 @@
-package lexer.tokens;
+package token;
 
 public class Paren extends Token {
 	public static final String LEFT_PARENTHESIS = "(";

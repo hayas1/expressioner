@@ -2,7 +2,7 @@ package tree;
 
 import binding.Bindings;
 import binding.ConstantBinding;
-import lexer.tokens.ConstantToken;
+import token.ConstantToken;
 import visitor.EtVisitor;
 
 /**

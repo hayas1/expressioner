@@ -3,8 +3,8 @@ package tree;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lexer.tokens.Paren;
-import lexer.tokens.Separator;
+import token.Paren;
+import token.Separator;
 import visitor.EtVisitor;
 
 /**
@@ -63,14 +63,14 @@ public class Expressions extends Argument {
 	}
 
 	public List<MainExpression> getExpressions() {
-		return super.getChildren().castExpressions();
+		return super.getChildren().downCast(MainExpression.class);
 	}
 
 	public Expressions setExpressions(final List<MainExpression> expressions) {
-		if(expressions != null) {
+		if(expressions!=null && !expressions.isEmpty()) {
 			super.setChildrenNodes(expressions.toArray(new EtNode[expressions.size()]));
 		} else {
-			throw new NodeTypeException("don't allow null expressions");
+			throw new NodeTypeException("don't allow null or empty expressions");
 		}
 		return this;
 	}

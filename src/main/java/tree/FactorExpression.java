@@ -1,6 +1,6 @@
 package tree;
 
-import lexer.tokens.Paren;
+import token.Paren;
 import visitor.EtVisitor;
 
 /**
@@ -81,6 +81,41 @@ public class FactorExpression extends Factor {
 		return this;
 	}
 
+
+	public EtNode getParentElement() {
+		EtNode upper;
+		for(upper = this; upper.getParent()!=null; upper = upper.getParent()) {
+			final EtNode parent = upper.getParent();
+			if(parent.getChildren().size()>1) {
+				return upper;
+			}
+		}
+		return upper;		//root
+	}
+
+	public EtNode getChildElement() {
+		EtNode downer;
+		for(downer = this; !downer.getChildren().isEmpty(); downer = downer.getChild(0)) {
+			if(downer.getChildren().size()>1) {
+				return downer;
+			} else if(downer.isSameNodeType(new Expressions())) {
+				continue;
+			}
+		}
+		return downer;		//final leaf
+	}
+
+	public boolean parenRemovable() {
+		return getParentElement().isSameNodeType(getChildElement());
+	}
+
+	public void parenRemove() {
+		if(parenRemovable()) {
+			getParentElement().replace(getChildElement());
+		} else {
+			throw new NodeTypeException("don't removable paren");
+		}
+	}
 
 
 

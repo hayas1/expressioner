@@ -11,6 +11,8 @@ import tree.PowerFactor;
 import tree.Term;
 import tree.Variable;
 import tree.VariableConstant;
+import tree.exnode.Fraction;
+import tree.exnode.Product;
 
 /**
  *
@@ -108,6 +110,24 @@ public abstract class EtVisitor {
 	public boolean leave(final Expressions node) {
 		return true;
 	}
+
+
+	public boolean visit(final Product node) {
+		return true;
+	}
+
+	public boolean leave(final Product node) {
+		return true;
+	}
+
+	public boolean visit(final Fraction node) {
+		return true;
+	}
+
+	public boolean leave(final Fraction node) {
+		return true;
+	}
+
 
 
 

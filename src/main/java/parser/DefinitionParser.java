@@ -3,12 +3,12 @@ package parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import lexer.tokens.ConstantToken;
-import lexer.tokens.Controller;
-import lexer.tokens.FunctionToken;
-import lexer.tokens.Paren;
-import lexer.tokens.Token;
-import lexer.tokens.VariableToken;
+import token.ConstantToken;
+import token.Controller;
+import token.FunctionToken;
+import token.Paren;
+import token.Token;
+import token.VariableToken;
 import tree.Condition;
 import tree.ConstantDefinition;
 import tree.Constants;

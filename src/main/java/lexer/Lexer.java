@@ -3,7 +3,7 @@ package lexer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lexer.tokens.Token;
+import token.Token;
 
 public class Lexer {
 	private final String expression;

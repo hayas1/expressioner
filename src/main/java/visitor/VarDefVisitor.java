@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import lexer.tokens.VariableToken;
+import token.VariableToken;
 import tree.Variable;
 import tree.VariableDefinition;
 import tree.Variables;

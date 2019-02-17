@@ -1,6 +1,6 @@
 package tree;
 
-import lexer.tokens.Operator;
+import token.Operator;
 import visitor.EtVisitor;
 
 /**
@@ -103,7 +103,6 @@ public class Term extends EtNode {
 		super.setChild(TERM, term);
 		return this;
 	}
-
 
 
 }

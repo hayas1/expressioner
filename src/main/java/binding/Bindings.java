@@ -3,7 +3,7 @@ package binding;
 import java.util.HashMap;
 import java.util.Map;
 
-import lexer.tokens.Token;
+import token.Token;
 
 public class Bindings {
 	private final static Bindings instance = new Bindings();

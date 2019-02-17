@@ -1,6 +1,6 @@
 package tree;
 
-import lexer.tokens.Controller;
+import token.Controller;
 import visitor.DefinitionVisitor;
 import visitor.VarDefVisitor;
 

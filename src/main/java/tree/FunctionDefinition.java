@@ -1,7 +1,7 @@
 package tree;
 
-import lexer.tokens.Controller;
-import lexer.tokens.FunctionToken;
+import token.Controller;
+import token.FunctionToken;
 import visitor.DefinitionVisitor;
 import visitor.FuncDefVisitor;
 

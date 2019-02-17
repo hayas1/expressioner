@@ -1,4 +1,4 @@
-package lexer.tokens;
+package token;
 
 public class Operator extends Token {
 	public static final String EQUAL = "=";

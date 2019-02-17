@@ -1,4 +1,4 @@
-package lexer.tokens;
+package token;
 
 public class Controller extends Token {
 	public static final String DEFVAR = "defvar";

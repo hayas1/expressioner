@@ -1,7 +1,7 @@
 package tree;
 
-import lexer.tokens.ConstantToken;
-import lexer.tokens.Separator;
+import token.ConstantToken;
+import token.Separator;
 import visitor.EtVisitor;
 
 /**
