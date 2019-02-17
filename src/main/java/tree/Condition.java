@@ -1,6 +1,6 @@
 package tree;
 
-import lexer.tokens.Operator;
+import token.Operator;
 import visitor.EtVisitor;
 
 /**
@@ -41,7 +41,6 @@ public class Condition extends EtNode {
 	public String toString() {
 		return getLeftHandSide().toString() + getRelationalOperator().toString() + getRightHandSide().toString();
 	}
-
 
 	public MainExpression getLeftHandSide() {
 		return (MainExpression)super.getChild(LEFT_HAND_SIDE);

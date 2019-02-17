@@ -1,6 +1,6 @@
 package parser;
 
-import lexer.tokens.Token;
+import token.Token;
 
 public class SyntaxException extends RuntimeException {
 	private final Token token;

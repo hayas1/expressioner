@@ -1,6 +1,6 @@
 package tree;
 
-import lexer.tokens.Operator;
+import token.Operator;
 import visitor.EtVisitor;
 
 /**

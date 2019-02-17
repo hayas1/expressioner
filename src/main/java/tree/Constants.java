@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lexer.tokens.ConstantToken;
-import lexer.tokens.Paren;
-import lexer.tokens.Separator;
-import lexer.tokens.Token;
+import token.ConstantToken;
+import token.Paren;
+import token.Separator;
+import token.Token;
 import visitor.DefinitionVisitor;
 
 /**

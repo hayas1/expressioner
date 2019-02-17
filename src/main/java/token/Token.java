@@ -1,4 +1,4 @@
-package lexer.tokens;
+package token;
 
 import lexer.TokenTable;
 

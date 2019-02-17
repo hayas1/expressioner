@@ -24,7 +24,10 @@ public class EtNodeList extends AbstractList<EtNode> {
 
 	@Override
 	public int size() {
-		return nodes.size();
+		return (int)nodes
+				.stream()
+				.filter(node -> node!=null)
+				.count();
 	}
 
 	@Override
@@ -67,9 +70,11 @@ public class EtNodeList extends AbstractList<EtNode> {
 		}
 	}
 
-
-	public List<MainExpression> castExpressions() {
-		return Arrays.asList(nodes.toArray(new MainExpression[nodes.size()]));
+	public <T extends EtNode> List<T> downCast(final Class<T> nodeType){
+		return nodes
+				.stream()
+				.map(node -> nodeType.cast(node))
+				.collect(Collectors.toList());
 	}
 
 

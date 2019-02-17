@@ -1,4 +1,4 @@
-package lexer.tokens;
+package token;
 
 public abstract class Operand extends Token {
 

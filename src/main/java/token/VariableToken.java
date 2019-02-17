@@ -1,4 +1,4 @@
-package lexer.tokens;
+package token;
 
 public class VariableToken extends Operand {
 

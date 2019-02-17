@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import lexer.tokens.ConstantToken;
+import token.ConstantToken;
 import tree.ConstantDefinition;
 import tree.Constants;
 import tree.Variable;

@@ -45,12 +45,17 @@ public abstract class EtNode {
 		return this;
 	}
 
+
 	public void replace(final EtNode node) {
 		final EtNode parent = this.getParent();
 		this.setParent(null);
 		node.setParent(parent);
 
 		parent.getChildren().replace(this, node);
+	}
+
+	public boolean isSameNodeType(final EtNode node) {
+		return this.getClass()==node.getClass();
 	}
 
 

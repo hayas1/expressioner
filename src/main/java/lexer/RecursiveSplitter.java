@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lexer.tokens.Token;
+import token.Token;
 
 /**
  *
@@ -65,7 +65,7 @@ public class RecursiveSplitter {
 	}
 
 	private String nextMatch(final String expression) {
-		if(expression.matches("^\\d+.*")) {		//start with digit
+		if(expression.matches("^\\d.*$")) {		//start with digit
 			return splitDigit(expression);
 		} else {
 			return longestMatch(expression);
@@ -90,7 +90,7 @@ public class RecursiveSplitter {
 	}
 
 	private String splitDigit(final String expression) {
-		if(expression.matches("^\\d+.*")) {		//start with digit
+		if(expression.matches("^\\d.*$")) {		//start with digit
 			return expression.split("(?<=\\d)(?=\\D)")[0];
 		} else {
 			return expression;

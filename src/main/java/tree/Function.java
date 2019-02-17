@@ -2,8 +2,8 @@ package tree;
 
 import binding.Bindings;
 import binding.FunctionBinding;
-import lexer.tokens.FunctionToken;
-import lexer.tokens.Operator;
+import token.FunctionToken;
+import token.Operator;
 import visitor.EtVisitor;
 
 /**
