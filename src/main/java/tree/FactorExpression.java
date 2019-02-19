@@ -13,6 +13,7 @@ public class FactorExpression extends Factor {
 	private Paren leftParen;
 	private final static int MAIN_EXPRESSION = 0;
 	private Paren rightParen;
+//	private boolean isNegative;
 
 
 	@Override
@@ -82,6 +83,15 @@ public class FactorExpression extends Factor {
 	}
 
 
+//	public boolean isNegative() {
+//		return isNegative;
+//	}
+//
+//	public FactorExpression setNegative(final boolean isNegative) {
+//		this.isNegative = isNegative;
+//		return this;
+//	}
+
 	public EtNode getParentElement() {
 		EtNode upper;
 		for(upper = this; upper.getParent()!=null; upper = upper.getParent()) {
@@ -109,13 +119,32 @@ public class FactorExpression extends Factor {
 		return getParentElement().isSameNodeType(getChildElement());
 	}
 
-	public void parenRemove() {
-		if(parenRemovable()) {
+	public void removeParen(final boolean isPostive) {
+		final EtVisitor reverser = new EtVisitor() {
+			@Override
+			public boolean visit(final MainExpression node) {
+				node.removeSign();
+				return super.visit(node);
+			}
+
+			@Override
+			public boolean visit(final Expression node) {
+				node.reverseSign();
+				return super.visit(node);
+			}
+		};
+
+		if(parenRemovable() && isPostive) {
 			getParentElement().replace(getChildElement());
+		} else if(parenRemovable() && !isPostive) {
+			final EtNode child = getChildElement();
+			child.accept(reverser);
+			getParentElement().replace(child);
 		} else {
 			throw new NodeTypeException("don't removable paren");
 		}
 	}
+
 
 
 

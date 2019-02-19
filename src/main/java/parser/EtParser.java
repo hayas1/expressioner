@@ -9,6 +9,7 @@ import binding.ConstantBinding;
 import binding.FunctionBinding;
 import binding.VariableBinding;
 import token.ConstantToken;
+import token.DigitToken;
 import token.FunctionToken;
 import token.Operator;
 import token.Paren;
@@ -18,6 +19,7 @@ import token.VariableToken;
 import tree.Argument;
 import tree.Condition;
 import tree.Constant;
+import tree.DigitConstant;
 import tree.EtNode;
 import tree.Expression;
 import tree.Expressions;
@@ -25,7 +27,6 @@ import tree.Factor;
 import tree.FactorExpression;
 import tree.Function;
 import tree.MainExpression;
-import tree.NumberConstant;
 import tree.PowerFactor;
 import tree.Term;
 import tree.Variable;
@@ -140,8 +141,8 @@ public class EtParser {
 		}
 	}
 
-	public NumberConstant createNumberConstEt() {
-		final NumberConstant numberConstant = numberConstant(null);
+	public DigitConstant createDigitConstantEt() {
+		final DigitConstant numberConstant = digitConstant(null);
 
 		if(!hasNextToken()) {
 			return numberConstant;
@@ -333,7 +334,7 @@ public class EtParser {
 	protected Factor factor(final EtNode parent) {
 		if(getCurrentToken().isVariable()) {
 			return variable(parent);
-		} else if(getCurrentToken().isConstant()) {
+		} else if(getCurrentToken().isConstant() || getCurrentToken().isDigit()) {
 			return constant(parent);
 		} else if(getCurrentToken().isLeftParen()) {
 			return factorExpression(parent);
@@ -363,10 +364,10 @@ public class EtParser {
 		}
 	}
 
-	//constant() -> numberConstant() | variableConstant()
+	//constant() -> digitConstant() | variableConstant()
 	protected Constant constant(final EtNode parent) {
-		if(getCurrentToken().isNumber()) {
-			return numberConstant(parent);
+		if(getCurrentToken().isDigit()) {
+			return digitConstant(parent);
 		} else if(getCurrentToken().isConstant()) {
 			return variableConstant(parent);
 		} else {
@@ -393,23 +394,23 @@ public class EtParser {
 		return constant.setParent(parent).setChildren(variableConstant);
 	}
 
-	//constant() -> constantToken [. constantToken]
-	protected NumberConstant numberConstant(final EtNode parent) {
-		final ConstantToken integer = constantToken();
+	//constant() -> digitToken [. digitToken]
+	protected DigitConstant digitConstant(final EtNode parent) {
+		final DigitToken integer = digitToken();
 
 		Separator point = null;
-		ConstantToken decimal = null;
+		DigitToken decimal = null;
 		if(getCurrentToken().isPoint()) {
 			point = point();
-			decimal = constantToken();
+			decimal = digitToken();
 		}
 
-		return new NumberConstant().setParent(parent).setChildren(integer, point, decimal);
+		return new DigitConstant().setParent(parent).setChildren(integer, point, decimal);
 	}
 
-	protected ConstantToken numberConstant() {
-		if(getCurrentToken().isNumber()) {
-			return (ConstantToken)getCurrentReadNext();
+	protected DigitToken digitToken() {
+		if(getCurrentToken().isDigit()) {
+			return (DigitToken)getCurrentReadNext();
 		} else {
 			throw new SyntaxException("expected number constant token, but unexpected token: ", getCurrentToken());
 		}

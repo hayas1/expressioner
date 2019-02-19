@@ -21,9 +21,4 @@ public class ConstantToken extends Operand {
 		return true;
 	}
 
-	@Override
-	public boolean isNumber() {
-		return Token.isValidDigit(super.getName());
-	}
-
 }

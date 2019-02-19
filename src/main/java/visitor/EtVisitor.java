@@ -6,7 +6,7 @@ import tree.Expressions;
 import tree.FactorExpression;
 import tree.Function;
 import tree.MainExpression;
-import tree.NumberConstant;
+import tree.DigitConstant;
 import tree.PowerFactor;
 import tree.Term;
 import tree.Variable;
@@ -71,11 +71,11 @@ public abstract class EtVisitor {
 		return true;
 	}
 
-	public boolean visit(final NumberConstant node) {
+	public boolean visit(final DigitConstant node) {
 		return true;
 	}
 
-	public boolean leave(final NumberConstant node) {
+	public boolean leave(final DigitConstant node) {
 		return true;
 	}
 

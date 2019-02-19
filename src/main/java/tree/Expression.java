@@ -98,5 +98,11 @@ public class Expression extends EtNode {
 	}
 
 
+	public Expression reverseSign() {
+		if(hasOperator()) {
+			setOperator(getOperator().reverseSign());
+		}
+		return this;
+	}
 
 }

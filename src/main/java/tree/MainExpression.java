@@ -73,4 +73,16 @@ public class MainExpression extends EtNode{
 		return null;
 	}
 
+	public MainExpression removeSign() {
+		setSign(null);
+		return this;
+	}
+
+	public MainExpression reverseSign() {
+		if(hasSign()) {
+			setSign(getSign().reverseSign());
+		}
+		return this;
+	}
+
 }

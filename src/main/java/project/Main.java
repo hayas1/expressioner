@@ -4,6 +4,7 @@ import java.util.List;
 
 import lexer.Lexer;
 import parser.EtParser;
+import token.DigitToken;
 import token.Token;
 import tree.EtNode;
 import visitor.EtVisitor;
@@ -12,7 +13,9 @@ public class Main {
 
 
 	public static void main(final String[] args) {
-		String expressiontmp = "1*(2*3)=6";
+		System.out.println(DigitToken.divide((DigitToken)Token.create("200"), (DigitToken)Token.create("10"),3));
+
+		String expressiontmp = "1*(2*3)>1+(2+3)";
 		String expression1 = "100x^2 + 11x+10=0";
 		String expression2 = "100x^2+11x+10>=0";
 		String expression3 = "100xyz+x=0";
@@ -31,7 +34,7 @@ public class Main {
 
 		EtVisitor testVisitor = new EtVisitor() {
 			public boolean visit(tree.FactorExpression node) {
-				node.parenRemove();
+				node.removeParen(false);
 				return super.visit(node);
 			}
 		};

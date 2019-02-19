@@ -95,6 +95,15 @@ public class Operator extends Token {
 	}
 
 
+	public Operator reverseSign() {
+		if(isPlus()) {
+			return (Operator)Token.create(Operator.MINUS);
+		} else if(isMinus()) {
+			return (Operator)Token.create(Operator.PLUS);
+		} else {
+			throw new TokenException("this token is not additive operator");
+		}
+	}
 
 
 }

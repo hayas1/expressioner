@@ -65,7 +65,7 @@ public class Paren extends Token {
 		} else if(isLeftBracket() || isRightBracket()) {
 			return createCorrespondenceBracket();
 		} else {
-			throw new TokenNameException("undefined correspondence paren: " + getName());
+			throw new TokenException("undefined correspondence paren: " + getName());
 		}
 	}
 
@@ -75,7 +75,7 @@ public class Paren extends Token {
 		} else if(isRightParenthesis()) {
 			return (Paren) create(Paren.LEFT_PARENTHESIS);
 		} else {
-			throw new TokenNameException("not parenthesis token: " + getName());
+			throw new TokenException("not parenthesis token: " + getName());
 		}
 	}
 
@@ -85,7 +85,7 @@ public class Paren extends Token {
 		} else if(isRightBrace()) {
 			return (Paren) create(LEFT_BRACE);
 		} else {
-			throw new TokenNameException("not brace token: " + getName());
+			throw new TokenException("not brace token: " + getName());
 		}
 	}
 
@@ -95,7 +95,7 @@ public class Paren extends Token {
 		} else if(isRightBracket()) {
 			return (Paren) create(LEFT_BRACKET);
 		} else {
-			throw new TokenNameException("not bracket token: " + getName());
+			throw new TokenException("not bracket token: " + getName());
 		}
 	}
 }

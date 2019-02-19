@@ -15,6 +15,7 @@ import lexer.TokenTable;
  * ・制御子 controller <br>
  */
 public abstract class Token {
+	public static final String DIGIT = "digit";
 	public static final String CONSTANT = "constant";
 	public static final String VARIABLE = "variable";
 	public static final String FUNCTION = "function";
@@ -62,18 +63,18 @@ public abstract class Token {
 		} else if(CONTROLLER.equals(kind)) {
 			return new Controller(name);
 		} else {
-			throw new TokenNameException("invalid token kind:" + kind);
+			throw new TokenException("invalid token kind:" + kind);
 		}
 	}
 
 	public static Token createInference(final String name) {
 		if(isValidDigit(name)) {
-			return new ConstantToken(name);
+			return new DigitToken(name);
 		} else if(isValidName(name)) {
 			TokenTable.getInstance().defineInference(name);
 			return createDefinedKind(name, inferenceKind(name));
 		} else {
-			throw new TokenNameException("invalid token name: " + name);
+			throw new TokenException("invalid token name: " + name);
 		}
 	}
 
@@ -93,7 +94,7 @@ public abstract class Token {
 		} else if(isValidDigit(name)||isValidName(name)) {
 			return createInference(name);
 		} else {
-			throw new TokenNameException("cannot create token, invalid name: " + name);
+			throw new TokenException("cannot create token, invalid name: " + name);
 		}
 	}
 
@@ -108,12 +109,12 @@ public abstract class Token {
 		if(tokenTable.isDefinedToken(name)) {
 			return createDefinedKind(name, tokenTable.getKind(name));
 		} else if(isValidDigit(name)){
-			return new ConstantToken(name);
+			return new DigitToken(name);
 		} else if(isValidName(name)){
 			TokenTable.getInstance().defineOperand(name, kind);
 			return createDefinedKind(name, kind);
 		} else {
-			throw new TokenNameException("space cannot convert to token");
+			throw new TokenException("space cannot convert to token");
 		}
 	}
 
@@ -124,7 +125,7 @@ public abstract class Token {
 		if(1<=nameDigit.length && nameDigit.length<=2) {
 			return new String(nameDigit[0]);
 		} else {
-			throw new TokenNameException("");
+			throw new TokenException("");
 		}
 	}
 
@@ -208,7 +209,7 @@ public abstract class Token {
 		return false;
 	}
 
-	public boolean isNumber() {
+	public boolean isDigit() {
 		return false;
 	}
 
