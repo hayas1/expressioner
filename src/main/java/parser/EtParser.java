@@ -27,6 +27,7 @@ import tree.Factor;
 import tree.FactorExpression;
 import tree.Function;
 import tree.MainExpression;
+import tree.MainTerm;
 import tree.PowerFactor;
 import tree.Term;
 import tree.Variable;
@@ -35,7 +36,8 @@ import tree.VariableConstant;
 /**
  * ・条件 -> 主式 関係演算子 主式 <br>
  * ・主式 -> [符号] 式 <br>
- * ・式 -> 項 [加法演算子 式] <br>
+ * ・式 -> 主項 [加法演算子 式] <br>
+ * ・主項 -> 項 <br>
  * ・項 -> 累乗因子 [[乗法演算子] 項] <br>
  * ・累乗因子 -> 因子 [累乗演算子 累乗因子] <br>
  * ・因子 -> 変数|定数|因子式|関数 <br>
@@ -98,6 +100,16 @@ public class EtParser {
 			return expression;
 		} else {
 			throw new SyntaxException("not expression, unexpected token: ", iterator.next());
+		}
+	}
+
+	public MainTerm createMainTermEt() {
+		final MainTerm term = mainTerm(null);
+
+		if(!hasNextToken()) {
+			return term;
+		} else {
+			throw new SyntaxException("not term, unexpected token: ", iterator.next());
 		}
 	}
 
@@ -255,11 +267,11 @@ public class EtParser {
 		}
 	}
 
-	//expression() -> term() [additiveOperator() expression()]
+	//expression() -> mainTerm() [additiveOperator() expression()]
 	protected Expression expression(final EtNode parent) {
 		final Expression expression = new Expression();
 
-		final Term term = term(expression);
+		final MainTerm mainTerm = mainTerm(expression);
 
 		Operator additiveOperator = null;
 		Expression postExpression = null;
@@ -268,7 +280,7 @@ public class EtParser {
 			postExpression = expression(expression);
 		}
 
-		return expression.setParent(parent).setChildren(term, additiveOperator, postExpression);
+		return expression.setParent(parent).setChildren(mainTerm, additiveOperator, postExpression);
 	}
 
 	protected Operator additiveOperator() {
@@ -277,6 +289,15 @@ public class EtParser {
 		} else {
 			throw new SyntaxException("expected additive operator, but unexpected token: ", getCurrentToken());
 		}
+	}
+
+	//mainTerm() -> term()
+	protected MainTerm mainTerm(final EtNode parent) {
+		final MainTerm mainTerm = new MainTerm();
+
+		final Term term = term(mainTerm);
+
+		return mainTerm.setParent(parent).setChildren(term);
 	}
 
 	//term() -> powerfactor() [[multiplicativeOperator()] term()]

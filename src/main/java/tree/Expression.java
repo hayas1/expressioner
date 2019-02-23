@@ -5,12 +5,12 @@ import visitor.EtVisitor;
 
 /**
  *
- * 式 -> 項 [加法演算子 式]
+ * 式 -> 主項 [加法演算子 式]
  * @author hayas
  *
  */
 public class Expression extends EtNode {
-	private static final int TERM = 0;
+	private static final int MAIN_TERM = 0;
 	private Operator operator;
 	private static final int EXPRESSION = 1;
 
@@ -18,7 +18,7 @@ public class Expression extends EtNode {
 	@Override
 	public boolean accept(final EtVisitor visitor) {
 		if(visitor.visit(this)) {
-			getTerm().accept(visitor);
+			getMainTerm().accept(visitor);
 			if(hasOperator()) {
 				getExpression().accept(visitor);
 			}
@@ -32,8 +32,8 @@ public class Expression extends EtNode {
 		return (Expression)super.setParent(parent);
 	}
 
-	public Expression setChildren(final Term term, final Operator operator, final Expression expression) {
-		setTerm(term);
+	public Expression setChildren(final MainTerm term, final Operator operator, final Expression expression) {
+		setMainTerm(term);
 		setOperator(operator);
 		setExpression(expression);
 
@@ -43,20 +43,20 @@ public class Expression extends EtNode {
 	@Override
 	public String toString() {
 		if(hasOperator()) {
-			return getTerm().toString() + getOperator().toString() + getExpression().toString();
+			return getMainTerm().toString() + getOperator().toString() + getExpression().toString();
 		} else {
-			return getTerm().toString();
+			return getMainTerm().toString();
 		}
 	}
 
 
-	public Term getTerm() {
-		return (Term)super.getChild(TERM);
+	public MainTerm getMainTerm() {
+		return (MainTerm)super.getChild(MAIN_TERM);
 	}
 
-	public Expression setTerm(final Term term) {
+	public Expression setMainTerm(final MainTerm term) {
 		if(term != null) {
-			super.setChild(TERM, term);
+			super.setChild(MAIN_TERM, term);
 		} else {
 			throw new NodeTypeException("don't allow null term");
 		}

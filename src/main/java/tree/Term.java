@@ -2,7 +2,6 @@ package tree;
 
 import token.Operator;
 import visitor.EtVisitor;
-import visitor.TermSimplizeVisitor;
 
 /**
  * @author hayas
@@ -32,7 +31,7 @@ public class Term extends EtNode {
 	}
 
 	public Term setChildren(final PowerFactor factor, final Operator operator, final Term term) {
-		setFactor(factor);
+		setPowerFactor(factor);
 		setOperator(operator);
 		setTerm(term);
 
@@ -54,7 +53,7 @@ public class Term extends EtNode {
 		return (PowerFactor)super.getChild(POWER_FACTOR);
 	}
 
-	public Term setFactor(final PowerFactor factor) {
+	public Term setPowerFactor(final PowerFactor factor) {
 		if(factor != null) {
 			super.setChild(POWER_FACTOR, factor);
 		} else {
@@ -123,6 +122,22 @@ public class Term extends EtNode {
 	}
 
 	/**
+	 * 親が未設定の累乗因子ノードから、そのノードのみを子にもつ新たな項のノードを作成する
+	 * @param powerFactor 親が未設定の累乗因子
+	 * @return 作成したノード
+	 */
+	public static Term makeNode(final PowerFactor factor) {
+		if(factor.getParent()!=null) {
+			throw new NodeTypeException("term child must have null parent");
+		}
+
+		final Term term = new Term();
+		term.setPowerFactor(factor.setParent(term));
+
+		return term;
+	}
+
+	/**
 	 * 親が未設定の累乗因子ノードとの掛け算を行う
 	 * つまり、新たな項を作成し、その項の親にこの項の親を設定し、その項の子として引数の累乗因子とこの項を設定する
 	 * @param factor 親が未設定の累乗因子
@@ -133,11 +148,9 @@ public class Term extends EtNode {
 			throw new NodeTypeException("times operand must have null parent");
 		}
 
-		final Term term = new Term();
+		final Term term = makeNode(factor);
 		this.replace(term);
-		term.setChildren(factor, null, this);
-		this.setParent(term);
-		factor.setParent(term);
+		term.setTerm(this.setParent(term));
 
 		return term;
 	}
@@ -146,27 +159,20 @@ public class Term extends EtNode {
 	 * 親が未設定の累乗因子ノードとの割り算を行う
 	 * つまり、この項の子の項のうち、最も子の項の子を持たない項の子に除算記号と引数の累乗因子を設定する
 	 * このとき項と累乗因子の間に新たに項のノードが作成される
-	 * @param factor
-	 * @return
+	 * @param factor 親が未設定の累乗因子
+	 * @return このノード
 	 */
 	public Term Divide(final PowerFactor factor) {
 		if(factor.getParent()!=null) {
 			throw new NodeTypeException("divide operand must have null parent");
 		}
 
-	}
-
-	/**
-	 * この項を分子/分母の形に作り替える
-	 * 各因子などの状態は触らない これは式の直下の項について行うことを前提としている
-	 * @return
-	 */
-	public Term toSimpleFraction() {
-		final TermSimplizeVisitor visitor = new TermSimplizeVisitor();
-		this.accept(visitor);
-
-
+		final Term term = makeNode(factor);
+		Term downer;
+		for(downer = this; downer.hasTerm(); downer = downer.getTerm());
+		downer.setOperator(Operator.create(Operator.DIVIDE)).setTerm(term.setParent(downer));
 
 		return this;
 	}
+
 }

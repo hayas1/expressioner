@@ -1,12 +1,13 @@
 package visitor;
 
 import tree.Condition;
+import tree.DigitConstant;
 import tree.Expression;
 import tree.Expressions;
 import tree.FactorExpression;
 import tree.Function;
 import tree.MainExpression;
-import tree.DigitConstant;
+import tree.MainTerm;
 import tree.PowerFactor;
 import tree.Term;
 import tree.Variable;
@@ -110,6 +111,16 @@ public abstract class EtVisitor {
 	public boolean leave(final Expressions node) {
 		return true;
 	}
+
+	public boolean visit(final MainTerm node) {
+		return true;
+	}
+
+	public boolean leave(final MainTerm node) {
+		return true;
+	}
+
+
 
 
 	public boolean visit(final Product node) {

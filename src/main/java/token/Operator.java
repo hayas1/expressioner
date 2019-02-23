@@ -17,6 +17,14 @@ public class Operator extends Token {
 		super(name);
 	}
 
+	public static Operator create(final String name) {
+		if(inferenceKind(name).equals(Token.OPERATOR)) {
+			return (Operator)Token.create(name);
+		} else {
+			throw new TokenException("invalid operator token: " + name);
+		}
+	}
+
 	@Override
 	public String getKind() {
 		return Token.OPERATOR;
