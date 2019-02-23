@@ -159,7 +159,7 @@ public class DigitConstant extends Constant {
 		} else if(depth == 0) {
 			integer = DigitToken.create(digit.getName().substring(0, digit.numberOfDigit()));
 			decimal = null;
-		}else if(digit.numberOfDigit() > depth) {
+		} else if(digit.numberOfDigit() > depth) {
 			integer = DigitToken.create(digit.getName().substring(0, digit.numberOfDigit()-depth));
 			decimal = DigitToken.create(digit.getName().substring(digit.numberOfDigit()-depth));
 		} else if(digit.numberOfDigit() <= depth){

@@ -83,15 +83,6 @@ public class FactorExpression extends Factor {
 	}
 
 
-//	public boolean isNegative() {
-//		return isNegative;
-//	}
-//
-//	public FactorExpression setNegative(final boolean isNegative) {
-//		this.isNegative = isNegative;
-//		return this;
-//	}
-
 	public EtNode getParentElement() {
 		EtNode upper;
 		for(upper = this; upper.getParent()!=null; upper = upper.getParent()) {

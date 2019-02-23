@@ -23,7 +23,7 @@ public class DigitToken extends Token {
 	}
 
 	public static DigitToken create(final int integer) {
-		return new DigitToken(Integer.toString(integer));
+		return create(Integer.toString(integer));
 	}
 
 	public static DigitToken create(final String name) {

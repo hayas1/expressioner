@@ -71,5 +71,10 @@ public abstract class EtNode {
 		return this.getClass()==node.getClass();
 	}
 
+	public EtNode getRoot() {
+		EtNode upper;
+		for(upper = this; upper.getParent()!=null; upper = upper.getParent());
+		return upper;
+	}
 
 }
