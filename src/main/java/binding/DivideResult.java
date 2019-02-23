@@ -3,6 +3,7 @@ package binding;
 import token.DigitToken;
 import token.Separator;
 import token.Token;
+import tree.DigitConstant;
 
 /**
  * このクラスは割り算の商と余りの情報を小数で保持する。
@@ -19,26 +20,31 @@ public class DivideResult {
 	public DivideResult(final String quotient, final String remainder, final int depth) {
 		if(!Token.isValidDigit(quotient) || !Token.isValidDigit(remainder)) {
 			throw new CalculateException("include no digit char: " + quotient + "&" + remainder);
-		}
-		if(quotient.length() != remainder.length()) {
+		} else if(quotient.length() != remainder.length()) {
 			throw new CalculateException("not same length: " + quotient + "&" + remainder);
 		}
-		if(depth<0 || quotient.length()<depth || remainder.length()<depth) {
-			throw new CalculateException("illegal point location: " + depth);
-		}
 
-		quotientInteger = initIntegerPart(quotient.substring(0, quotient.length()-depth));		//TODO 0start. 0only
-		quotientDecimal = initDecimalPart(quotient.substring(quotient.length()-depth));		//TODO depth = length
-		remainderInteger = initIntegerPart(remainder.substring(0, remainder.length()-depth));
-		remainderDecimal = initDecimalPart(remainder.substring(remainder.length()-depth));
+		DigitConstant quotientConstant = DigitConstant.makeNode((DigitToken)Token.create(quotient), depth);
+		DigitConstant remainderConstant = DigitConstant.makeNode((DigitToken)Token.create(remainder), depth);
+		quotientInteger = initIntegerPart(quotientConstant.getInteger().getName());
+		quotientDecimal = initDecimalPart(quotientConstant.hasDecimal()? quotientConstant.getDecimal().getName(): "");
+		remainderInteger = initIntegerPart(remainderConstant.getInteger().getName());
+		remainderDecimal = initDecimalPart(remainderConstant.hasDecimal()? remainderConstant.getDecimal().getName(): "");
+	}
+
+	public DivideResult(final DigitToken qInt, final DigitToken qDec, final DigitToken rInt, final DigitToken rDec) {
+		quotientInteger = initIntegerPart(qInt.getName());
+		quotientDecimal = qDec!=null? initDecimalPart(qDec.getName()): null;
+		remainderInteger = initIntegerPart(rInt.getName());
+		remainderDecimal = rDec!=null? initDecimalPart(rDec.getName()): null;
 	}
 
 	private DigitToken initIntegerPart(final String integerPart) {
 		final String zeroRemove = integerPart.replaceFirst("^0+", "");
 		if(zeroRemove.isEmpty()) {
-			return (DigitToken)Token.create("0");
+			return DigitToken.create(0);
 		} else {
-			return (DigitToken)Token.create(zeroRemove);
+			return DigitToken.create(zeroRemove);
 		}
 	}
 
@@ -47,7 +53,7 @@ public class DivideResult {
 		if(zeroRemove.isEmpty()) {
 			return null;
 		} else {
-			return (DigitToken)Token.create(zeroRemove);
+			return DigitToken.create(zeroRemove);
 		}
 	}
 
@@ -102,6 +108,25 @@ public class DivideResult {
 
 	public DigitToken getRemainderDecimal() {
 		return remainderDecimal;
+	}
+
+	/**
+	 * 余りの小数点を左にlenthだけずらしたDivideResultを新しく作成する
+	 * @param shift
+	 * @return 新しく作成したDivideResult
+	 */
+	public DivideResult shiftRemainder(final int shift) {
+		final int depth;
+		final DigitConstant digits;
+		if(hasRemainderDecimal()) {
+			depth = shift + getRemainderDecimal().numberOfDigit();
+			digits = DigitConstant.makeNode(getRemainderInteger().append(getQuotientDecimal()),depth);
+		} else {
+			depth = shift;
+			digits = DigitConstant.makeNode(getRemainderInteger(),depth);
+		}
+
+		return new DivideResult(getQuotientInteger(), getQuotientDecimal(), digits.getInteger(), digits.getDecimal());
 	}
 
 

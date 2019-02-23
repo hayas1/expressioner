@@ -18,6 +18,15 @@ import visitor.EtVisitor;
  *
  */
 public class Product extends EtNode {
+//	private int digitPowDigit = 0;
+//	private int digitPowConstant = 0;
+//	private int constantPowDigit = 0;
+//	private int constantPowConstant = 0;
+//	private int digitPowVariable = 0;
+//	private int variablePowDigit = 0;
+//	private int variablePowConstant = 0;
+//	private int constantPowVariable = 0;
+//	private int variablePowVariable = 0;
 
 	@Override
 	public boolean accept(final EtVisitor visitor) {
@@ -63,4 +72,11 @@ public class Product extends EtNode {
 		}
 		return this;
 	}
+
+//	public Product setDigitPowDigit(final List<PowerFactor> digitPowDigits) {
+//		if(digitPowDigits!=null && !digitPowDigits.isEmpty()) {
+//			digitPowDigit = digitPowDigits.size();
+//			//TODO これしなくていい方向模索
+//		}
+//	}
 }

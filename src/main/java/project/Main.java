@@ -4,8 +4,8 @@ import java.util.List;
 
 import lexer.Lexer;
 import parser.EtParser;
-import token.DigitToken;
 import token.Token;
+import tree.DigitConstant;
 import tree.EtNode;
 import visitor.EtVisitor;
 
@@ -13,7 +13,13 @@ public class Main {
 
 
 	public static void main(final String[] args) {
-		System.out.println(DigitToken.divide((DigitToken)Token.create("200"), (DigitToken)Token.create("10"),3));
+		final DigitConstant a = new EtParser(new Lexer("1145.14").tokenize()).createDigitConstantEt();
+		final DigitConstant b = new EtParser(new Lexer("1.54").tokenize()).createDigitConstantEt();
+		//System.out.println(DigitConstant.divide(a, b, 2));
+		System.out.println(DigitConstant.times(a, b));
+
+		System.out.println(b.toFraction());
+		//System.out.println(DigitToken.plus((DigitToken)Token.create("200"), (DigitToken)Token.create("110")));
 
 		String expressiontmp = "1*(2*3)>1+(2+3)";
 		String expression1 = "100x^2 + 11x+10=0";
@@ -34,7 +40,7 @@ public class Main {
 
 		EtVisitor testVisitor = new EtVisitor() {
 			public boolean visit(tree.FactorExpression node) {
-				node.removeParen(false);
+				node.removeParen(true);
 				return super.visit(node);
 			}
 		};

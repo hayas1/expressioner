@@ -1,9 +1,13 @@
 package tree;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
+import binding.DivideResult;
 import parser.EtParser;
 import token.DigitToken;
+import token.Operator;
 import token.Separator;
 import token.Token;
 import visitor.EtVisitor;
@@ -92,7 +96,6 @@ public class DigitConstant extends Constant {
 		return decimal;
 	}
 
-	//TODO only length approximately 3 can convert mutually double
 	public DigitConstant setDecimal(final DigitToken decimal) {
 		if(decimal==null || decimal.isDigit()) {
 			this.decimal = decimal;
@@ -110,52 +113,107 @@ public class DigitConstant extends Constant {
 			throw new NodeTypeException("not integer token: " + toString());
 		}
 	}
-
 	public double toDouble() {
 		return Double.parseDouble(getInteger().getName() + getPoint().getName() + getDecimal().getName());
+	}
+
+	public int decimalPlace() {
+		return hasDecimal()? getDecimal().numberOfDigit(): 0;
+	}
+
+	/**
+	 * 整数部分と小数部分を連結した新たなDigitTokenを作成する。小数点以下は引数で指定した桁になるまで0でパディングする
+	 * @param depth 小数点以下の桁数
+	 * @return 連結したDigitToken
+	 */
+	public DigitToken decimalConcat(final int depth) {
+		if(!hasDecimal()) {
+			return getInteger();
+		} else if(decimalPlace()>=depth) {
+			return getInteger().append(getDecimal());
+		} else {
+			return getInteger().append(getDecimal().behindPudding(depth-decimalPlace()));
+		}
 	}
 
 	/**
 	 * 引数の整数をもとに親が未設定のノードを作成
 	 * @param integer 作成するノードの値
-	 * @return 作成したノード
+	 * @return 作成したノード(親未設定)
 	 */
 	public static DigitConstant makeNode(final int integer) {
-		return new DigitConstant().setInteger((DigitToken)Token.create(Integer.toString(integer)));
+		return new DigitConstant().setInteger(DigitToken.create(integer));
 	}
 
-	public static int gcd(final DigitConstant a, final DigitConstant b) {
-		return euclideanGcd(a.toInteger(), b.toInteger());
-	}
-
-	public static int lcm(final DigitConstant a, final DigitConstant b) {
-		return a.toInteger() * b.toInteger() / gcd(a, b);
-	}
-
-	public static int euclideanGcd(final int a, final int b) {
-		if(b > 0) {
-			return euclideanGcd(b, a%b);
+	/**
+	 * 引数のDigitTokenを小数点以下depth桁として解釈したDigitConstantのノードを作成。親は未設定。
+	 * depthが負だとNodeTypeExceptionを投げる。
+	 * @param digit 数字列
+	 * @param depth 小数点以下の桁数
+	 * @return 作成したノード(親未設定)
+	 */
+	public static DigitConstant makeNode(final DigitToken digit, final int depth) {
+		final DigitToken integer, decimal;
+		if(depth<0) {
+			throw new NodeTypeException(digit.toString() + " cannot convert to depth " + depth + " decimal");
+		} else if(depth == 0) {
+			integer = DigitToken.create(digit.getName().substring(0, digit.numberOfDigit()));
+			decimal = null;
+		}else if(digit.numberOfDigit() > depth) {
+			integer = DigitToken.create(digit.getName().substring(0, digit.numberOfDigit()-depth));
+			decimal = DigitToken.create(digit.getName().substring(digit.numberOfDigit()-depth));
+		} else if(digit.numberOfDigit() <= depth){
+			integer = DigitToken.create("0");
+			decimal = DigitToken.create(digit.pudding(depth-digit.numberOfDigit()));
 		} else {
-			return a;
+			throw new NodeTypeException("fatal error");
+		}
+
+		if(decimal == null) {
+			return DigitConstant.makeNode(integer.toInteger());
+		} else {
+			return new DigitConstant().setChildren(integer, (Separator)Token.create(Separator.POINT), decimal);
 		}
 	}
 
 	public static DigitConstant plus(final DigitConstant a, final DigitConstant b) {
-		final String aInteger = a.getInteger().getName();
+		final int depth = a.decimalPlace()>b.decimalPlace()? a.decimalPlace(): b.decimalPlace();
+		final DigitToken ans = DigitToken.plus(a.decimalConcat(depth), b.decimalConcat(depth));
+		return makeNode(ans, depth);
+	}
+
+	public static DigitConstant minus(final DigitConstant a, final DigitConstant b) {
+		final int depth = a.decimalPlace()>b.decimalPlace()? a.decimalPlace(): b.decimalPlace();
+		final DigitToken ans = DigitToken.minus(a.decimalConcat(depth), b.decimalConcat(depth));
+		return makeNode(ans, depth);
+	}
+
+	public static DigitConstant times(final DigitConstant a, final DigitConstant b) {
+		final DigitToken ans = DigitToken.times(a.decimalConcat(0), b.decimalConcat(0));
+		return makeNode(ans, a.decimalPlace() + b.decimalPlace());
+	}
+
+	public static DivideResult divide(final DigitConstant a, final DigitConstant b, final int depth) {
+		final int bDepth = b.decimalPlace();
+		final DivideResult ans = DigitToken.divide(a.decimalConcat(bDepth), b.decimalConcat(bDepth), depth+bDepth);
+
+		return ans.shiftRemainder(bDepth);
 	}
 
 
-	public Term convertToFraction() {
+	public Term toFraction() {		//TODO Term may implement reduction operation
 		if(!hasDecimal()) {
 			return new EtParser(Collections.singletonList(getInteger())).createTermEt();
 		} else {
-			return devide(a, b);
+			final DigitToken numerator = decimalConcat(0);
+			final DigitToken denominator = DigitToken.create((int)Math.pow(10, decimalPlace()));
+			final int gcd = DigitToken.gcd(numerator, denominator);
+
+			final List<Token> term = Arrays.asList(numerator.divide(gcd), Token.create(Operator.DIVIDE), denominator.divide(gcd));
+			return (Term)this.replace(new EtParser(term).createTermEt());
 		}
 	}
 
-	public static Term devide(final DigitConstant a, final DigitConstant b) {
-
-	}
 
 
 }

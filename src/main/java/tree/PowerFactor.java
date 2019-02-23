@@ -97,5 +97,18 @@ public class PowerFactor extends Argument {
 	}
 
 
+	/**
+	 * このノードがnodeTypeA^nodeTypeBの形であるかどうかを判定する。
+	 * @param nodeTypeA 基数の型
+	 * @param nodeTypeB 指数の型
+	 * @return 判定結果
+	 */
+	public boolean isFactorPowFacor(final Factor nodeTypeA, final Factor nodeTypeB) {
+		if(hasOperator()) {
+			return getFactor().isSameNodeType(nodeTypeA) && getPowerFactor().isSameNodeType(nodeTypeB);
+		} else {
+			return false;
+		}
+	}
 
 }
