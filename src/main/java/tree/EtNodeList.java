@@ -6,6 +6,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 基本ArrayListだが、ArrayListでのサイズ以上のインデックスにアクセスしようとした場合はその間をnullパディングする
+ * @author hayas
+ *
+ */
 public class EtNodeList extends AbstractList<EtNode> {
 	private final List<EtNode> nodes;
 
@@ -18,8 +23,14 @@ public class EtNodeList extends AbstractList<EtNode> {
 	}
 
 	@Override
-	public EtNode get(int index) {
-		return nodes.get(index);
+	public EtNode get(final int index) {
+		if(index < nodes.size()) {
+			return nodes.get(index);
+		} else {
+			nullPudding(index + 1);
+			return nodes.get(index);
+		}
+
 	}
 
 	@Override
@@ -37,7 +48,8 @@ public class EtNodeList extends AbstractList<EtNode> {
 
 	@Override
 	public EtNode set(final int index, final EtNode element) {
-		if(index == nodes.size()) {
+		if(index >= nodes.size()) {
+			nullPudding(index);
 			nodes.add(element);
 			return null;
 		} else {
@@ -51,6 +63,17 @@ public class EtNodeList extends AbstractList<EtNode> {
 				.stream()
 				.map(EtNode::toString)
 				.collect(Collectors.joining());
+	}
+
+	public boolean nullPudding(final int index) {
+		if(index < nodes.size()) {
+			return false;
+		} else {
+			for(int i = nodes.size(); i < index; i++) {
+				add(null);
+			}
+			return true;
+		}
 	}
 
 

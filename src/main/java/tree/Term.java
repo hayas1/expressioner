@@ -122,7 +122,8 @@ public class Term extends EtNode {
 	}
 
 	/**
-	 * 親が未設定の累乗因子ノードから、そのノードのみを子にもつ新たな項のノードを作成する
+	 * 親が未設定の累乗因子ノードから、そのノードのみを子にもち親が未設定の新たな項のノードを作成する
+	 * 注：このメソッドは木を組み替えるので木の探索中に使用すべきではない
 	 * @param powerFactor 親が未設定の累乗因子
 	 * @return 作成したノード
 	 */
@@ -137,42 +138,62 @@ public class Term extends EtNode {
 		return term;
 	}
 
-	/**
-	 * 親が未設定の累乗因子ノードとの掛け算を行う
-	 * つまり、新たな項を作成し、その項の親にこの項の親を設定し、その項の子として引数の累乗因子とこの項を設定する
-	 * @param factor 親が未設定の累乗因子
-	 * @return 掛け算後の部分木の項のルート つまり新たに作成した項のノード
-	 */
-	public Term times(final PowerFactor factor) {
-		if(factor.getParent()!=null) {
-			throw new NodeTypeException("times operand must have null parent");
-		}
-
-		final Term term = makeNode(factor);
-		this.replace(term);
-		term.setTerm(this.setParent(term));
-
-		return term;
+	public Term getDeepestTerm() {
+		Term downer;
+		for(downer = this; downer.hasTerm(); downer = downer.getTerm());
+		return downer;
 	}
 
 	/**
-	 * 親が未設定の累乗因子ノードとの割り算を行う
-	 * つまり、この項の子の項のうち、最も子の項の子を持たない項の子に除算記号と引数の累乗因子を設定する
-	 * このとき項と累乗因子の間に新たに項のノードが作成される
+	 * 親が未設定の項ノードとの掛け算を行う
+	 * つまり、この項の再帰的な子の項のうち、最も子の項の子を持たない項の子に引数の項を設定する
+	 * 注：このメソッドは木を組み替えるので木の探索中に使用すべきではない
+	 * @param term 親が未設定の項
+	 * @return この項
+	 */
+	public Term times(final Term term) {
+		if(term.getParent()!=null) {
+			throw new NodeTypeException("times operand term must have null parent");
+		}
+
+		final Term deepest = getDeepestTerm();
+		deepest.setTerm(term.setParent(deepest));
+
+		return this;
+	}
+
+	/**
+	 * 親が未設定の主項ノードとの割り算を行う
+	 * つまり、この項の再帰的な子の項のうち、最も子の項の子を持たない項の子に除算記号と引数の項を設定する
+	 * 注：このメソッドは木を組み替えるので木の探索中に使用すべきではない
 	 * @param factor 親が未設定の累乗因子
 	 * @return このノード
 	 */
-	public Term Divide(final PowerFactor factor) {
-		if(factor.getParent()!=null) {
-			throw new NodeTypeException("divide operand must have null parent");
+	public Term divide(final Term term) {
+		if(term.getParent()!=null) {
+			throw new NodeTypeException("divide operand term must have null parent");
 		}
 
-		final Term term = makeNode(factor);
-		Term downer;
-		for(downer = this; downer.hasTerm(); downer = downer.getTerm());
-		downer.setOperator(Operator.create(Operator.DIVIDE)).setTerm(term.setParent(downer));
+		final Term deepest = getDeepestTerm();
+		deepest.setOperator(Operator.create(Operator.DIVIDE)).setTerm(term.setParent(deepest));
 
 		return this;
+	}
+
+	public Term times(final PowerFactor factor) {
+		if(factor.getParent()!=null) {
+			throw new NodeTypeException("times operand power factor must have null parent");
+		}
+
+		return this.times(makeNode(factor));
+	}
+
+	public Term divide(final PowerFactor factor) {
+		if(factor.getParent()!=null) {
+			throw new NodeTypeException("divide operand power factor must have null parent");
+		}
+
+		return this.divide(makeNode(factor));
 	}
 
 }

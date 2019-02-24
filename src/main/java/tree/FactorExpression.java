@@ -83,6 +83,10 @@ public class FactorExpression extends Factor {
 	}
 
 
+	/**
+	 * 子を1つしか持たないノードのうち最もルートに近いものを取得する
+	 * @return 子を1つしか持たないノードのうち最もルートに近いもの
+	 */
 	public EtNode getParentElement() {
 		EtNode upper;
 		for(upper = this; upper.getParent()!=null; upper = upper.getParent()) {
@@ -91,9 +95,13 @@ public class FactorExpression extends Factor {
 				return upper;
 			}
 		}
-		return upper;		//root
+		return upper;
 	}
 
+	/**
+	 * 子を1つしか持たないノードはスキップして探索し、初めて2つ以上の子を持ったノードを発見したときそのノードを取得する
+	 * @return 初めて子を2つ以上もつノード
+	 */
 	public EtNode getChildElement() {
 		EtNode downer;
 		for(downer = this; !downer.getChildren().isEmpty(); downer = downer.getChild(0)) {
@@ -103,27 +111,16 @@ public class FactorExpression extends Factor {
 				continue;
 			}
 		}
-		return downer;		//final leaf
+		return downer;
 	}
 
 	public boolean parenRemovable() {
 		return getParentElement().isSameNodeType(getChildElement());
 	}
 
-	public void removeParen(final boolean isPostive) {
-		final EtVisitor reverser = new EtVisitor() {
-			@Override
-			public boolean visit(final MainExpression node) {
-				node.removeSign();
-				return super.visit(node);
-			}
-
-			@Override
-			public boolean visit(final Expression node) {
-				node.reverseSign();
-				return super.visit(node);
-			}
-		};
+	//TODO 掛け算とか全部作ってから作り直し
+	public void removeParen(final boolean isPostive, final boolean isNumerator) {
+		
 
 		if(parenRemovable() && isPostive) {
 			getParentElement().replace(getChildElement());

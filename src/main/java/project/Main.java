@@ -1,13 +1,15 @@
 package project;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lexer.Lexer;
 import parser.EtParser;
 import token.Token;
+import tree.Condition;
 import tree.DigitConstant;
 import tree.EtNode;
-import tree.MainTerm;
+import tree.Term;
 import visitor.EtVisitor;
 
 public class Main {
@@ -19,7 +21,7 @@ public class Main {
 		//System.out.println(DigitConstant.divide(a, b, 2));
 		System.out.println(DigitConstant.times(a, b));
 
-//		System.out.println(b.toFraction());
+		//		System.out.println(b.toFraction());
 		//System.out.println(DigitToken.plus((DigitToken)Token.create("200"), (DigitToken)Token.create("110")));
 
 		String expressiontmp = "1*(2*3)>1+(2+3)";
@@ -40,16 +42,18 @@ public class Main {
 		//System.out.println(expression);
 
 		EtVisitor testVisitor = new EtVisitor() {
-//			public boolean visit(tree.FactorExpression node) {
-//				node.removeParen(true);
-//				return super.visit(node);
-//			}
+			List<Term> list = new ArrayList<>();
+			@Override
+			public boolean visit(/*Main*/Term node) {
+				list.add(node);
+				return super.visit(node);
+			}
 
 			@Override
-						public boolean visit(MainTerm node) {
-							System.out.println(node);
-							return super.visit(node);
-						}
+			public boolean leave(Condition node) {
+				list.forEach(nod -> nod.times(new EtParser(new Lexer("a").tokenize()).createPowerFactorEt()));
+				return super.leave(node);
+			}
 		};
 
 		expression.accept(testVisitor);
