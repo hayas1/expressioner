@@ -42,6 +42,17 @@ public class Condition extends EtNode {
 		return getLeftHandSide().toString() + getRelationalOperator().toString() + getRightHandSide().toString();
 	}
 
+	@Override
+	public Condition copySubEt(final EtNode parent) {
+		final Condition condition = new Condition();
+
+		final MainExpression leftHandSide = getLeftHandSide().copySubEt(condition);
+		final Operator operator = getRelationalOperator().clone();
+		final MainExpression rightHandSide = getRightHandSide().copySubEt(condition);
+
+		return condition.setParent(parent).setChildren(leftHandSide, operator, rightHandSide);
+	}
+
 	public MainExpression getLeftHandSide() {
 		return (MainExpression)super.getChild(LEFT_HAND_SIDE);
 	}

@@ -17,6 +17,11 @@ public class Operator extends Token {
 		super(name);
 	}
 
+	@Override
+	public Operator clone() {
+		return create(getName());
+	}
+
 	public static Operator create(final String name) {
 		if(inferenceKind(name).equals(Token.OPERATOR)) {
 			return (Operator)Token.create(name);

@@ -129,6 +129,14 @@ public class DivideResult {
 		return new DivideResult(getQuotientInteger(), getQuotientDecimal(), digits.getInteger(), digits.getDecimal());
 	}
 
+	public DigitConstant getQuotient() {
+		if(hasQuotientDecimal()) {
+			return new DigitConstant().setChildren(getQuotientInteger(), Separator.create(Separator.POINT), getQuotientDecimal());
+		} else {
+			return new DigitConstant().setChildren(getQuotientInteger(), null, null);
+		}
+	}
+
 
 
 }

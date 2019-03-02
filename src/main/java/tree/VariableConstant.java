@@ -37,6 +37,15 @@ public class VariableConstant extends Constant {
 		return getConstantToken().toString();
 	}
 
+	@Override
+	public VariableConstant copySubEt(final EtNode parent) {
+		final VariableConstant variableConstant = new VariableConstant();
+
+		final ConstantToken constantToken = getConstantToken().clone();
+
+		return variableConstant.setParent(parent).setChildren(constantToken);
+	}
+
 	public ConstantToken getConstantToken() {
 		return constantToken;
 	}

@@ -43,6 +43,16 @@ public class MainExpression extends EtNode{
 		}
 	}
 
+	@Override
+	public MainExpression copySubEt(final EtNode parent) {
+		final MainExpression mainExpression = new MainExpression();
+
+		final Operator sign = hasSign()? getSign(): null;
+		final Expression expression = getExpression().copySubEt(mainExpression);
+
+		return mainExpression.setParent(parent).setChildren(sign, expression);
+	}
+
 	public boolean hasSign() {
 		return getSign() != null;
 	}

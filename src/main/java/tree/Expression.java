@@ -49,6 +49,16 @@ public class Expression extends EtNode {
 		}
 	}
 
+	@Override
+	public Expression copySubEt(final EtNode parent) {
+		final Expression expression = new Expression();
+
+		final MainTerm term = getMainTerm().copySubEt(expression);
+		final Operator operator = hasOperator()? getOperator(): null;
+		final Expression postExpression = hasOperator()? getExpression().copySubEt(expression): null;
+
+		return expression.setParent(parent).setChildren(term, operator, postExpression);
+	}
 
 	public MainTerm getMainTerm() {
 		return (MainTerm)super.getChild(MAIN_TERM);
@@ -105,4 +115,18 @@ public class Expression extends EtNode {
 //		return this;
 //	}
 
+	/**
+	 * 新たに括弧式、主式のノードを作成し、それらの親子関係を作成
+	 * その子として、この式の部分木をディープコピーした、新たな括弧式を作成する
+	 * @return 作成した括弧式
+	 */
+	public ParenedExpression makeParened() {
+		final ParenedExpression parened = new ParenedExpression();
+		final MainExpression mainExpression = new MainExpression();
+
+		parened.setParent(null).setExpression(mainExpression);
+		mainExpression.setParent(parened).setExpression(this.getExpression().copySubEt(mainExpression));
+
+		return parened;
+	}
 }

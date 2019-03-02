@@ -13,6 +13,19 @@ public class Paren extends Token {
 	}
 
 	@Override
+	public Paren clone() {
+		return create(getName());
+	}
+
+	public static Paren create(final String name) {
+		if(inferenceKind(name).equals(Token.PAREN)) {
+			return (Paren)Token.create(name);
+		} else {
+			throw new TokenException("invalid operator token: " + name);
+		}
+	}
+
+	@Override
 	public String getKind() {
 		return Token.PAREN;
 	}

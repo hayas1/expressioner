@@ -9,9 +9,13 @@ package tree;
 public abstract class Argument extends EtNode {
 
 	@Override
+	public abstract Argument copySubEt(EtNode parent);
+
+	@Override
 	public Argument setParent(final EtNode parent) {
 		return (Argument) super.setParent(parent);
 	}
+
 
 
 }

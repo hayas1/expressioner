@@ -24,10 +24,10 @@ import tree.EtNode;
 import tree.Expression;
 import tree.Expressions;
 import tree.Factor;
-import tree.FactorExpression;
 import tree.Function;
 import tree.MainExpression;
 import tree.MainTerm;
+import tree.ParenedExpression;
 import tree.PowerFactor;
 import tree.Term;
 import tree.Variable;
@@ -40,10 +40,10 @@ import tree.VariableConstant;
  * ・主項 -> 項 <br>
  * ・項 -> 累乗因子 [[乗法演算子] 項] <br>
  * ・累乗因子 -> 因子 [累乗演算子 累乗因子] <br>
- * ・因子 -> 変数|定数|因子式|関数 <br>
+ * ・因子 -> 変数|定数|括弧式|関数 <br>
  * ・定数 -> 文字定数|数字定数 <br>
  * ・数字定数 -> 数字[.数字] <br>
- * ・因子式 -> 左括弧 主式 右括弧 <br>
+ * ・括弧式 -> 左括弧 主式 右括弧 <br>
  * ・関数 -> 関数名 ['] 引数 <br>
  * ・引数 -> 累乗因子|式列 <br>
  * ・式列 -> 左括弧 主式{"," 主式} 右括弧 <br>
@@ -163,11 +163,11 @@ public class EtParser {
 		}
 	}
 
-	public FactorExpression createFactorExpressionEt() {
-		final FactorExpression factorExpression = factorExpression(null);
+	public ParenedExpression createParenedExpressionEt() {
+		final ParenedExpression parenedExpression = parenedExpression(null);
 
 		if(!hasNextToken()) {
-			return factorExpression;
+			return parenedExpression;
 		} else {
 			throw new SyntaxException("not factor expression, unexpected token: ", iterator.next());
 		}
@@ -358,7 +358,7 @@ public class EtParser {
 		} else if(getCurrentToken().isConstant() || getCurrentToken().isDigit()) {
 			return constant(parent);
 		} else if(getCurrentToken().isLeftParen()) {
-			return factorExpression(parent);
+			return parenedExpression(parent);
 		} else if(getCurrentToken().isFunction()) {
 			return function(parent);
 		} else {
@@ -445,9 +445,9 @@ public class EtParser {
 		}
 	}
 
-	//factorExpression -> leftparen() expression() rightParen()
-	protected FactorExpression factorExpression(final EtNode parent) {
-		final FactorExpression factorExpression = new FactorExpression();
+	//parenedExpression -> leftparen() expression() rightParen()
+	protected ParenedExpression parenedExpression(final EtNode parent) {
+		final ParenedExpression factorExpression = new ParenedExpression();
 
 		final Paren leftParen = leftParen();
 		final MainExpression expression = mainExpression(factorExpression);

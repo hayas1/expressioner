@@ -16,6 +16,7 @@ public class Main {
 
 
 	public static void main(final String[] args) {
+		System.out.println(1+0.3*18);
 		final DigitConstant a = new EtParser(new Lexer("1145.14").tokenize()).createDigitConstantEt();
 		final DigitConstant b = new EtParser(new Lexer("1.54").tokenize()).createDigitConstantEt();
 		//System.out.println(DigitConstant.divide(a, b, 2));

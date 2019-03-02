@@ -57,6 +57,18 @@ public class VariableDefinition extends DefinitionNode {
 		return getDef().toString() + newToken + getVariables().toString() + condition;
 	}
 
+	@Override
+	public VariableDefinition copySubEt(final EtNode parent) {
+		final VariableDefinition variableDefinition = new VariableDefinition();
+
+		final Controller def = getDef().clone();
+		final Controller newToken = hasNewToken()? getNewToken().clone(): null;
+		final Variables variables = getVariables().copySubEt(variableDefinition);
+		final Condition condition = hasCondition()? getCondition().copySubEt(variableDefinition): null;
+
+		return variableDefinition.setParent(parent).setChildren(def, newToken, variables, condition);
+	}
+
 	public Controller getDef() {
 		return def;
 	}

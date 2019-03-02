@@ -5,7 +5,7 @@ import visitor.EtVisitor;
 
 /**
  * @author hayas
- * 項 = 因子 [[乗法演算子] 項]
+ * 項 = 累乗因子 [[乗法演算子] 項]
  *
  */
 public class Term extends EtNode {
@@ -47,6 +47,17 @@ public class Term extends EtNode {
 		} else {
 			return getPowerFactor().toString();
 		}
+	}
+
+	@Override
+	public Term copySubEt(final EtNode parent) {
+		final Term term = new Term();
+
+		final PowerFactor factor = getPowerFactor().copySubEt(term);
+		final Operator operator = hasOperator()? getOperator().clone(): null;
+		final Term postTerm = hasTerm()? getTerm().copySubEt(term): null;
+
+		return term.setParent(parent).setChildren(factor, operator, postTerm);
 	}
 
 	public PowerFactor getPowerFactor() {
@@ -149,7 +160,7 @@ public class Term extends EtNode {
 	 * つまり、この項の再帰的な子の項のうち、最も子の項の子を持たない項の子に引数の項を設定する
 	 * 注：このメソッドは木を組み替えるので木の探索中に使用すべきではない
 	 * @param term 親が未設定の項
-	 * @return この項
+	 * @return このノード
 	 */
 	public Term times(final Term term) {
 		if(term.getParent()!=null) {

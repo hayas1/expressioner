@@ -49,6 +49,17 @@ public class Function extends Factor {
 		}
 	}
 
+	@Override
+	public Function copySubEt(final EtNode parent) {
+		final Function function = new Function();
+
+		final FunctionToken functionToken = getFunctionToken().clone();
+		final Operator prime = hasPrime()? getPrime().clone(): null;
+		final Argument argument = getArgument().copySubEt(function);
+
+		return function.setParent(parent).setChildren(functionToken, prime, argument);
+	}
+
 
 	public FunctionToken getFunctionToken() {
 		return functionToken;

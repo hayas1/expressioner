@@ -5,15 +5,14 @@ import visitor.EtVisitor;
 
 /**
  *
- * 因子式 -> 左括弧 主式 右括弧
+ * 括弧式 -> 左括弧 主式 右括弧
  * @author hayas
  *
  */
-public class FactorExpression extends Factor {
+public class ParenedExpression extends Factor {
 	private Paren leftParen;
 	private final static int MAIN_EXPRESSION = 0;
 	private Paren rightParen;
-//	private boolean isNegative;
 
 
 	@Override
@@ -25,11 +24,11 @@ public class FactorExpression extends Factor {
 	}
 
 	@Override
-	public FactorExpression setParent(final EtNode parent) {
-		return (FactorExpression)super.setParent(parent);
+	public ParenedExpression setParent(final EtNode parent) {
+		return (ParenedExpression)super.setParent(parent);
 	}
 
-	public FactorExpression setChildren(final Paren leftParen, final MainExpression expression, final Paren rightParen) {
+	public ParenedExpression setChildren(final Paren leftParen, final MainExpression expression, final Paren rightParen) {
 		setLeftParen(leftParen);
 		setExpression(expression);
 		setRightParen(rightParen);
@@ -42,12 +41,22 @@ public class FactorExpression extends Factor {
 		return getLeftParen().toString() + getExpression().toString() + getRightParen().toString();
 	}
 
+	@Override
+	public ParenedExpression copySubEt(final EtNode parent) {
+		final ParenedExpression parenedExpression = new ParenedExpression();
+
+		final Paren leftParen = getLeftParen().clone();
+		final MainExpression mainExpression = getExpression().copySubEt(parenedExpression);
+		final Paren rightParen = getRightParen().clone();
+
+		return parenedExpression.setParent(parent).setChildren(leftParen, mainExpression, rightParen);
+	}
 
 	public Paren getLeftParen() {
 		return leftParen;
 	}
 
-	public FactorExpression setLeftParen(Paren leftParen) {
+	public ParenedExpression setLeftParen(final Paren leftParen) {
 		if(leftParen.isLeftParen()) {
 			this.leftParen = leftParen;
 		} else {
@@ -60,7 +69,7 @@ public class FactorExpression extends Factor {
 		return (MainExpression)super.getChild(MAIN_EXPRESSION);
 	}
 
-	public FactorExpression setExpression(final MainExpression expression) {
+	public ParenedExpression setExpression(final MainExpression expression) {
 		if(expression != null) {
 			super.setChild(MAIN_EXPRESSION, expression);
 		} else {
@@ -73,7 +82,7 @@ public class FactorExpression extends Factor {
 		return rightParen;
 	}
 
-	public FactorExpression setRightParen(final Paren rightParen) {
+	public ParenedExpression setRightParen(final Paren rightParen) {
 		if(rightParen.isRightParen()) {
 			this.rightParen = rightParen;
 		} else {
@@ -119,8 +128,8 @@ public class FactorExpression extends Factor {
 	}
 
 	//TODO 掛け算とか全部作ってから作り直し
-	public void removeParen(final boolean isPostive, final boolean isNumerator) {
-		
+	public void removeParen(/*final boolean isPostive, final boolean isNumerator*/) {
+
 
 		if(parenRemovable() && isPostive) {
 			getParentElement().replace(getChildElement());

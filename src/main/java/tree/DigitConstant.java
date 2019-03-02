@@ -53,6 +53,17 @@ public class DigitConstant extends Constant {
 		}
 	}
 
+	@Override
+	public DigitConstant copySubEt(final EtNode parent) {
+		final DigitConstant digitConstant = new DigitConstant();
+
+		final DigitToken integer = getInteger().clone();
+		final Separator point = hasDecimal()? getPoint(): null;
+		final DigitToken decimal = hasDecimal()? getDecimal().clone(): null;
+
+		return digitConstant.setParent(parent).setChildren(integer, point, decimal);
+	}
+
 
 	public DigitToken getInteger() {
 		return integer;
@@ -176,28 +187,77 @@ public class DigitConstant extends Constant {
 		}
 	}
 
-	public static DigitConstant plus(final DigitConstant a, final DigitConstant b) {
-		final int depth = a.decimalPlace()>b.decimalPlace()? a.decimalPlace(): b.decimalPlace();
-		final DigitToken ans = DigitToken.plus(a.decimalConcat(depth), b.decimalConcat(depth));
-		return makeNode(ans, depth);
+	/**
+	 * 加算を行い、木を作り替える
+	 * つまり、このDigitConstantと引数のDigitConstantで加算を行った結果得たDigitConstantノードでこのDigitConstantを置き換える
+	 * @param digit 親が未設定のDigitConstant
+	 * @return 加算を行った結果得たノード
+	 */
+	public DigitConstant plus(final DigitConstant digit) {
+		if(digit.getParent()!=null) {
+			throw new NodeTypeException("plus operand digit must have null parent");
+		}
+
+		final int depth = Math.max(this.decimalPlace(), digit.decimalPlace());
+		final DigitToken ans = DigitToken.plus(this.decimalConcat(depth), digit.decimalConcat(depth));
+		return (DigitConstant)this.replace(makeNode(ans, depth));
 	}
 
-	public static DigitConstant minus(final DigitConstant a, final DigitConstant b) {
-		final int depth = a.decimalPlace()>b.decimalPlace()? a.decimalPlace(): b.decimalPlace();
-		final DigitToken ans = DigitToken.minus(a.decimalConcat(depth), b.decimalConcat(depth));
-		return makeNode(ans, depth);
+	/**
+	 * 減算を行い、木を作り替える
+	 * つまり、このDigitConstantと引数のDigitConstantで減算を行った結果得たDigitConstantノードでこのDigitConstantを置き換える
+	 * @param digit 親が未設定のDigitConstant
+	 * @return 減算を行った結果得たノード
+	 */
+	public DigitConstant minus(final DigitConstant digit) {
+		if(digit.getParent()!=null) {
+			throw new NodeTypeException("minus operand digit must have null parent");
+		}
+
+		final int depth = Math.max(this.decimalPlace(), digit.decimalPlace());
+		final DigitToken ans = DigitToken.minus(this.decimalConcat(depth), digit.decimalConcat(depth));
+		return (DigitConstant)this.replace(makeNode(ans, depth));
 	}
 
-	public static DigitConstant times(final DigitConstant a, final DigitConstant b) {
-		final DigitToken ans = DigitToken.times(a.decimalConcat(0), b.decimalConcat(0));
-		return makeNode(ans, a.decimalPlace() + b.decimalPlace());
+	/**
+	 * 乗算を行い、木を作り替える
+	 * つまり、このDigitConstantと引数のDigitConstantで乗算を行った結果得たDigitConstantノードでこのDigitConstantを置き換える
+	 * @param digit 親が未設定のDigitConstant
+	 * @return 乗算を行った結果得たノード
+	 */
+	public DigitConstant times(final DigitConstant digit) {
+		if(digit.getParent()!=null) {
+			throw new NodeTypeException("times operand digit must have null parent");
+		}
+
+		final DigitToken ans = DigitToken.times(this.decimalConcat(0), digit.decimalConcat(0));
+		return (DigitConstant)this.replace(makeNode(ans, this.decimalPlace() + digit.decimalPlace()));
 	}
 
-	public static DivideResult divide(final DigitConstant a, final DigitConstant b, final int depth) {
-		final int bDepth = b.decimalPlace();
-		final DivideResult ans = DigitToken.divide(a.decimalConcat(bDepth), b.decimalConcat(bDepth), depth+bDepth);
 
-		return ans.shiftRemainder(bDepth);
+	/**
+	 * depthで与えられた位までの除算を行い、結果に応じて木を作り替える<br>
+	 * ・余りが出なかった場合 このDigitConstantを除算結果の小数の商を表すDigitConstantで置き換える<br>
+	 * ・余りが出た場合 このDigitConstantの親であるTermの子に分母として引数のDigitConstantを挿入する<br>
+	 * @param digit 親が未設定のDigitConstant
+	 * @param depth 商を小数点以下この値の桁まで計算する
+	 * @return 余りが出なかった場合は入れ替えたノード、余りが出た場合はTermのノード
+	 */
+	public EtNode divide(final DigitConstant digit, final int depth) {
+		if(digit.getParent()!=null) {
+			throw new NodeTypeException("divide operand digit must have null parent");
+		}
+
+		final int digitDepth = digit.decimalPlace();
+		final DigitToken thisConcatted = this.decimalConcat(digitDepth);
+		final DigitToken digitConcatted = digit.decimalConcat(digitDepth);
+		final DivideResult ans = DigitToken.divide(thisConcatted, digitConcatted, depth+digitDepth).shiftRemainder(digitDepth);
+
+		if(!ans.hasRemainder()) {
+			return this.replace(ans.getQuotient());
+		} else {
+			
+		}
 	}
 
 

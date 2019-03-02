@@ -36,6 +36,15 @@ public class MainTerm extends EtNode {
 		return getTerm().toString();
 	}
 
+	@Override
+	public MainTerm copySubEt(final EtNode parent) {
+		final MainTerm mainTerm = new MainTerm();
+
+		final Term term = getTerm().copySubEt(mainTerm);
+
+		return mainTerm.setParent(parent).setChildren(term);
+	}
+
 	public Term getTerm() {
 		return (Term)super.getChild(TERM);
 	}

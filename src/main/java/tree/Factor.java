@@ -15,6 +15,9 @@ public abstract class Factor extends EtNode {
 	//public abstract String getFactorType();
 
 	@Override
+	public abstract Factor copySubEt(final EtNode parent);
+
+	@Override
 	public Factor setParent(EtNode parent) {
 		return (Factor) super.setParent(parent);
 	}

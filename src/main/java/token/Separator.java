@@ -9,6 +9,19 @@ public class Separator extends Token{
 	}
 
 	@Override
+	public Separator clone() {
+		return create(getName());
+	}
+
+	public static Separator create(final String name) {
+		if(inferenceKind(name).equals(Token.SEPARATOR)) {
+			return (Separator)Token.create(name);
+		} else {
+			throw new TokenException("invalid operator token: " + name);
+		}
+	}
+
+	@Override
 	public String getKind() {
 		return Token.SEPARATOR;
 	}

@@ -16,6 +16,7 @@ import lexer.TokenTable;
  */
 public abstract class Token {
 	public static final String DIGIT = "digit";
+	public static final String DUMMY = "dummy";
 	public static final String CONSTANT = "constant";
 	public static final String VARIABLE = "variable";
 	public static final String FUNCTION = "function";
@@ -129,7 +130,7 @@ public abstract class Token {
 		}
 	}
 
-	public static Token createDummy() {
+	public static Dummy createDummy() {
 		return new Dummy();
 	}
 

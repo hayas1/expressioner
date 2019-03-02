@@ -6,6 +6,18 @@ public class FunctionToken extends Operand {
 		super(name);
 	}
 
+	@Override
+	public FunctionToken clone() {
+		return create(getName());
+	}
+
+	public static FunctionToken create(final String name) {
+		if(inferenceKind(name).equals(Token.FUNCTION)) {
+			return (FunctionToken)Token.create(name);
+		} else {
+			throw new TokenException("invalid operator token: " + name);
+		}
+	}
 
 	@Override
 	public String getKind() {

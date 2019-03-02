@@ -26,6 +26,19 @@ public class Controller extends Token {
 		return super.getName().equals(Controller.COLON);
 	}
 
+	@Override
+	public Controller clone() {
+		return create(getName());
+	}
+
+	public static Controller create(final String name) {
+		if(inferenceKind(name).equals(Token.CONTROLLER)) {
+			return (Controller)Token.create(name);
+		} else {
+			throw new TokenException("invalid operator token: " + name);
+		}
+	}
+
 	public static boolean isDef(final String token) {
 		return isDefVar(token) || isDefCons(token) || isDefFunc(token);
 	}

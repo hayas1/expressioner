@@ -9,7 +9,7 @@ import visitor.EtVisitor;
 
 /**
  *
- * 式列 -> 左括弧 主式 {"," 主式}  右括弧
+ * 式列 -> [左括弧] 主式 {"," 主式} [右括弧]
  * @author hayas
  *
  */
@@ -41,13 +41,33 @@ public class Expressions extends Argument {
 
 	@Override
 	public String toString() {
+		final String leftParen = hasLeftParen()? getLeftParen().toString(): "";
 		final String row = getExpressions()
 				.stream()
 				.map(MainExpression::toString)
 				.collect(Collectors.joining(Separator.COMMA + " "));
-		return getLeftParen().toString() + row + getRightParen().toString();
+		final String rightParen = hasRightParen()? getRightParen().toString(): "";
+
+		return leftParen + row + rightParen;
 	}
 
+	@Override
+	public Expressions copySubEt(final EtNode parent) {
+		final Expressions expressions = new Expressions();
+
+		final Paren leftParen = hasLeftParen()? getLeftParen().clone(): null;
+		final List<MainExpression> mainExpressions = getExpressions()
+				.stream()
+				.map(exp -> exp.copySubEt(expressions))
+				.collect(Collectors.toList());
+		final Paren rightParen = hasRightParen()? getRightParen().clone(): null;
+
+		return expressions.setParent(parent).setChildren(leftParen, mainExpressions, rightParen);
+	}
+
+	public boolean hasLeftParen() {
+		return getLeftParen() != null;
+	}
 
 	public Paren getLeftParen() {
 		return leftParen;
@@ -73,6 +93,10 @@ public class Expressions extends Argument {
 			throw new NodeTypeException("don't allow null or empty expressions");
 		}
 		return this;
+	}
+
+	public boolean hasRightParen() {
+		return getRightParen() != null;
 	}
 
 	public Paren getRightParen() {

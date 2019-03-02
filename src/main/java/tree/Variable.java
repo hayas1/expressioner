@@ -37,6 +37,15 @@ public class Variable extends Factor {
 		return getVariableToken().toString();
 	}
 
+	@Override
+	public Variable copySubEt(final EtNode parent) {
+		final Variable variable = new Variable();
+
+		final VariableToken variableToken = getVariableToken().clone();
+
+		return variable.setParent(parent).setChildren(variableToken);
+	}
+
 	public VariableToken getVariableToken() {
 		return token;
 	}

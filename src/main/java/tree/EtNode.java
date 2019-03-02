@@ -7,6 +7,7 @@ public abstract class EtNode {
 	private EtNodeList children = new EtNodeList();
 
 	public abstract boolean accept(final EtVisitor visitor);
+	public abstract EtNode copySubEt(final EtNode parent);
 
 	@Override
 	public boolean equals(final Object obj) {

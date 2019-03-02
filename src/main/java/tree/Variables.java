@@ -1,12 +1,10 @@
 package tree;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import token.Paren;
 import token.Separator;
-import token.Token;
 import token.VariableToken;
 import visitor.DefinitionVisitor;
 
@@ -44,15 +42,32 @@ public class Variables extends DefinitionNode {
 
 	@Override
 	public String toString() {
-		final Token leftParen = Optional.ofNullable((Token)getLeftParen()).orElse(Token.createDummy());
-		final Token rightParen = Optional.ofNullable((Token)getRightParen()).orElse(Token.createDummy());
+		final String leftParen = hasLeftParen()? getLeftParen().toString(): "";
+		final String rightParen = hasRightParen()? getRightParen().toString(): "";
 		final String row = variables
 				.stream()
 				.map(VariableToken::toString)
 				.collect(Collectors.joining(Separator.COMMA + " "));
-		return leftParen.toString() + row + rightParen.toString();
+		return leftParen + row + rightParen;
 	}
 
+	@Override
+	public Variables copySubEt(final EtNode parent) {
+		final Variables variables = new Variables();
+
+		final Paren leftParen = hasLeftParen()? getLeftParen().clone(): null;
+		final List<VariableToken> variableList = getVariables()
+				.stream()
+				.map(VariableToken::clone)
+				.collect(Collectors.toList());
+		final Paren rightParen = hasRightParen()? getRightParen().clone(): null;
+
+		return variables.setParent(parent).setChildren(leftParen, variableList, rightParen);
+	}
+
+	public boolean hasLeftParen() {
+		return getLeftParen() != null;
+	}
 
 	public Paren getLeftParen() {
 		return leftParen;
@@ -78,6 +93,10 @@ public class Variables extends DefinitionNode {
 			throw new NodeTypeException("don't allow null variable");
 		}
 		return this;
+	}
+
+	public boolean hasRightParen() {
+		return getRightParen() != null;
 	}
 
 	public Paren getRightParen() {

@@ -7,8 +7,17 @@ public class Dummy extends Token {
 	}
 
 	@Override
+	public Dummy clone() {
+		return create(getName());
+	}
+
+	public static Dummy create(final String name) {
+		return (Dummy)createDummy();
+	}
+
+	@Override
 	public String getKind() {
-		return "";
+		return Token.DUMMY;
 	}
 
 	@Override

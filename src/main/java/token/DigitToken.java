@@ -22,6 +22,11 @@ public class DigitToken extends Token {
 		return true;
 	}
 
+	@Override
+	public DigitToken clone() {
+		return create(getName());
+	}
+
 	public static DigitToken create(final int integer) {
 		return create(Integer.toString(integer));
 	}

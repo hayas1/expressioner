@@ -4,7 +4,7 @@ import tree.Condition;
 import tree.DigitConstant;
 import tree.Expression;
 import tree.Expressions;
-import tree.FactorExpression;
+import tree.ParenedExpression;
 import tree.Function;
 import tree.MainExpression;
 import tree.MainTerm;
@@ -88,11 +88,11 @@ public abstract class EtVisitor {
 		return true;
 	}
 
-	public boolean visit(final FactorExpression node) {
+	public boolean visit(final ParenedExpression node) {
 		return true;
 	}
 
-	public boolean leave(final FactorExpression node) {
+	public boolean leave(final ParenedExpression node) {
 		return true;
 	}
 

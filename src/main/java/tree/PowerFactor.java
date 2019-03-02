@@ -49,6 +49,17 @@ public class PowerFactor extends Argument {
 		}
 	}
 
+	@Override
+	public PowerFactor copySubEt(final EtNode parent) {
+		final PowerFactor powerFactor = new PowerFactor();
+
+		final Factor factor = getFactor().copySubEt(powerFactor);
+		final Operator operator = hasOperator()? getOperator().clone(): null;
+		final PowerFactor power = hasOperator()? getPowerFactor().copySubEt(powerFactor): null;
+
+		return powerFactor.setParent(parent).setChildren(factor, operator, power);
+	}
+
 	public Factor getFactor() {
 		return (Factor)super.getChild(FACTOR);
 	}

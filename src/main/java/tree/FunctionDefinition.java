@@ -61,6 +61,19 @@ public class FunctionDefinition extends DefinitionNode {
 		return getDef().toString() + newToken + getFunctionToken().toString() + getVariables().toString() + condition;
 	}
 
+	@Override
+	public FunctionDefinition copySubEt(final EtNode parent) {
+		final FunctionDefinition definition = new FunctionDefinition();
+
+		final Controller def = getDef().clone();
+		final Controller newToken = hasNewToken()? getNewToken().clone(): null;
+		final FunctionToken functionToken = getFunctionToken().clone();
+		final Variables variables = getVariables();
+		final Condition condition = hasCondition()? getCondition(): null;
+
+		return definition.setParent(parent).setChildren(def, newToken, functionToken, variables, condition);
+	}
+
 	public Controller getDef() {
 		return def;
 	}

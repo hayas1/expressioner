@@ -21,7 +21,7 @@ public class ConstantDefinition extends DefinitionNode {
 	@Override
 	public boolean accept(final DefinitionVisitor visitor) {
 		if(visitor.visit(this)) {
-			getconstants().accept(visitor);
+			getConstants().accept(visitor);
 			if(hasCondition()) {
 				getCondition().accept(visitor);
 			}
@@ -54,7 +54,19 @@ public class ConstantDefinition extends DefinitionNode {
 		final String newToken = hasNewToken()? getNewToken().toString(): "";
 		final String condition = hasCondition()? Controller.COLON + " " + getCondition().toString(): "";
 
-		return getDef().toString() + newToken + getconstants().toString() + condition;
+		return getDef().toString() + newToken + getConstants().toString() + condition;
+	}
+
+	@Override
+	public ConstantDefinition copySubEt(final EtNode parent) {
+		final ConstantDefinition definition = new ConstantDefinition();
+
+		final Controller def = getDef().clone();
+		final Controller newToken = hasNewToken()? getNewToken().clone(): null;
+		final Constants constants = getConstants().copySubEt(definition);
+		final Condition condition = hasCondition()? getCondition().copySubEt(definition): null;
+
+		return definition.setParent(parent).setChildren(def, newToken, constants, condition);
 	}
 
 	public Controller getDef() {
@@ -83,7 +95,7 @@ public class ConstantDefinition extends DefinitionNode {
 		return this;
 	}
 
-	public Constants getconstants() {
+	public Constants getConstants() {
 		return (Constants)super.getChild(CONSTANTS);
 	}
 
