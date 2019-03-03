@@ -5,7 +5,7 @@ import visitor.EtVisitor;
 
 /**
  *
- * 条件 -> 主式 関係演算子 主式
+ * 条件 -> 式 関係演算子 式
  * @author hayas
  *
  */
@@ -29,7 +29,7 @@ public class Condition extends EtNode {
 		return (Condition) super.setParent(parent);
 	}
 
-	public Condition setChildren(final MainExpression leftHandSide, final Operator operator, final MainExpression rightHandSide) {
+	public Condition setChildren(final Expression leftHandSide, final Operator operator, final Expression rightHandSide) {
 		setLeftHandSide(leftHandSide);
 		setRelationalOperator(operator);
 		setRightHandSide(rightHandSide);
@@ -46,18 +46,18 @@ public class Condition extends EtNode {
 	public Condition copySubEt(final EtNode parent) {
 		final Condition condition = new Condition();
 
-		final MainExpression leftHandSide = getLeftHandSide().copySubEt(condition);
+		final Expression leftHandSide = getLeftHandSide().copySubEt(condition);
 		final Operator operator = getRelationalOperator().clone();
-		final MainExpression rightHandSide = getRightHandSide().copySubEt(condition);
+		final Expression rightHandSide = getRightHandSide().copySubEt(condition);
 
 		return condition.setParent(parent).setChildren(leftHandSide, operator, rightHandSide);
 	}
 
-	public MainExpression getLeftHandSide() {
-		return (MainExpression)super.getChild(LEFT_HAND_SIDE);
+	public Expression getLeftHandSide() {
+		return (Expression)super.getChild(LEFT_HAND_SIDE);
 	}
 
-	public Condition setLeftHandSide(final MainExpression leftHandSide) {
+	public Condition setLeftHandSide(final Expression leftHandSide) {
 		if(leftHandSide != null) {
 			super.setChild(LEFT_HAND_SIDE, leftHandSide);
 		} else {
@@ -79,11 +79,11 @@ public class Condition extends EtNode {
 		return this;
 	}
 
-	public MainExpression getRightHandSide() {
-		return (MainExpression)super.getChild(RIGHT_HAND_SIDE);
+	public Expression getRightHandSide() {
+		return (Expression)super.getChild(RIGHT_HAND_SIDE);
 	}
 
-	public Condition setRightHandSide(final MainExpression rightHandSide) {
+	public Condition setRightHandSide(final Expression rightHandSide) {
 		if(rightHandSide != null) {
 			super.setChild(RIGHT_HAND_SIDE, rightHandSide);
 		} else {

@@ -1,26 +1,33 @@
 package tree;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import token.Dummy;
 import token.Operator;
+import token.Token;
 import visitor.EtVisitor;
 
 /**
  *
- * 式 -> 主項 [加法演算子 式]
+ * 式 -> [符号] 項 {加法演算子 項}
  * @author hayas
  *
  */
 public class Expression extends EtNode {
-	private static final int MAIN_TERM = 0;
-	private Operator operator;
-	private static final int EXPRESSION = 1;
+	private static final int TERM = 0;
+	private static final int TERMS_BEGIN = 1;
+	private int termsSize = 0;
 
 
 	@Override
 	public boolean accept(final EtVisitor visitor) {
 		if(visitor.visit(this)) {
-			getMainTerm().accept(visitor);
-			if(hasOperator()) {
-				getExpression().accept(visitor);
+			getTerm().accept(visitor);
+			if(hasTerms()) {
+				getTerms().forEach(ter -> ter.accept(visitor));
 			}
 		}
 
@@ -32,20 +39,25 @@ public class Expression extends EtNode {
 		return (Expression)super.setParent(parent);
 	}
 
-	public Expression setChildren(final MainTerm term, final Operator operator, final Expression expression) {
-		setMainTerm(term);
-		setOperator(operator);
-		setExpression(expression);
+	public Expression setChildren(final Operator sign, final Term term, final List<Term> terms) {
+		setTerm(term);
+		setSign(sign);		//this call getTerm()
+		setTerms(terms);
 
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		if(hasOperator()) {
-			return getMainTerm().toString() + getOperator().toString() + getExpression().toString();
+		if(!hasTerms()) {
+			return (Optional.ofNullable((Token)getSign()).orElse(Token.createDummy())).toString() + getTerm().toString();
 		} else {
-			return getMainTerm().toString();
+			final String term = getTerm().toString();
+			final String terms = getTerms()
+					.stream()
+					.map(ter -> ter.getAdditiveOperator().toString() + ter.toString())
+					.collect(Collectors.joining());
+			return (Optional.ofNullable((Token)getSign()).orElse(Token.createDummy())).toString() + term + terms;
 		}
 	}
 
@@ -53,80 +65,80 @@ public class Expression extends EtNode {
 	public Expression copySubEt(final EtNode parent) {
 		final Expression expression = new Expression();
 
-		final MainTerm term = getMainTerm().copySubEt(expression);
-		final Operator operator = hasOperator()? getOperator(): null;
-		final Expression postExpression = hasOperator()? getExpression().copySubEt(expression): null;
+		final Operator sign = hasSign()? getSign(): null;
+		final Term term = getTerm().copySubEt(expression);
+		final List<Term> terms;
+		if(!hasTerms()) {
+			terms = Collections.emptyList();
+		} else {
+			terms = getTerms()
+					.stream()
+					.map(ter -> ter.copySubEt(expression))
+					.collect(Collectors.toList());
+		}
 
-		return expression.setParent(parent).setChildren(term, operator, postExpression);
+		return expression.setParent(parent).setChildren(sign, term, terms);
 	}
 
-	public MainTerm getMainTerm() {
-		return (MainTerm)super.getChild(MAIN_TERM);
+	public String getSignString() {
+		if(hasSign()) {
+			return getSign().toString();
+		} else {
+			return Dummy.DUMMY;
+		}
 	}
 
-	public Expression setMainTerm(final MainTerm term) {
+	public boolean hasSign() {
+		return getSign() != null;
+	}
+
+	/**
+	 * この式の先頭の符号を取得するが、それは先頭の項がもつ加算演算子と同じである
+	 * つまり、このメソッドはgetTerm.getAdditiveOperator()と同様
+	 * @return この式の先頭の符号
+	 */
+	public Operator getSign() {
+		return getTerm().getAdditiveOperator();
+	}
+
+	/**
+	 * この式の先頭の符号を取得するが、それは先頭の項がもつ加算演算子と同じである
+	 * つまり、このメソッドはgetTerm.setAdditiveOperator(Operator)と同様
+	 * @param sign 式の先頭の符号
+	 * @return この式ノード
+	 */
+	public Expression setSign(final Operator sign) {
+		getTerm().setAdditiveOperator(sign);
+		return this;
+	}
+
+	public Term getTerm() {
+		return (Term)super.getChild(TERM);
+	}
+
+	public Expression setTerm(final Term term) {
 		if(term != null) {
-			super.setChild(MAIN_TERM, term);
+			super.setChild(TERM, term);
 		} else {
 			throw new NodeTypeException("don't allow null term");
 		}
 		return this;
 	}
 
-	public boolean hasOperator() {
-		final boolean hasOperator = getOperator()!=null;
-		final boolean hasExpression = getExpression()!=null;
-		if(hasOperator && !hasExpression) {
-			throw new NodeTypeException("invalid expression type: term additiveoperator null");
-		} else if(!hasOperator && hasExpression) {
-			throw new NodeTypeException("invalid exspression type: term null expression");
-		} else {
-			return hasOperator;
-		}
+	public boolean hasTerms() {
+		return termsSize != 0;
 	}
 
-	public Operator getOperator() {
-		return operator;
+	public List<Term> getTerms() {
+		return super.getChildren(TERMS_BEGIN, termsSize).downCast(Term.class);
 	}
 
-	public Expression setOperator(final Operator operator) {
-		if(operator==null || operator.isAdditiveOperator()) {
-			this.operator = operator;
-		} else {
-			throw new NodeTypeException("not additive operator: " + operator.getName());
-		}
-		return this;
-	}
-
-	public Expression getExpression() {
-		return (Expression)super.getChild(EXPRESSION);
-	}
-
-	public Expression setExpression(final Expression expression) {
-		super.setChild(EXPRESSION, expression);
+	public Expression setTerms(final List<Term> terms) {
+		final List<Term> list = Optional.ofNullable(terms).orElse(Collections.emptyList());
+		termsSize = list.size();
+		super.setChildren(TERMS_BEGIN, list);
 		return this;
 	}
 
 
-//	public Expression reverseSign() {
-//		if(hasOperator()) {
-//			setOperator(getOperator().reverseOperator());
-//		}
-//		return this;
-//	}
-
-	/**
-	 * 新たに括弧式、主式のノードを作成し、それらの親子関係を作成
-	 * その子として、この式の部分木をディープコピーした、新たな括弧式を作成する
-	 * @return 作成した括弧式
-	 */
-	public ParenedExpression makeParened() {
-		final ParenedExpression parened = new ParenedExpression();
-		final MainExpression mainExpression = new MainExpression();
-
-		parened.setParent(null).setExpression(mainExpression);
-		mainExpression.setParent(parened).setExpression(this.getExpression().copySubEt(mainExpression));
-
-		return parened;
-	}
 }

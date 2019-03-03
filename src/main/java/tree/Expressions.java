@@ -9,7 +9,7 @@ import visitor.EtVisitor;
 
 /**
  *
- * 式列 -> [左括弧] 主式 {"," 主式} [右括弧]
+ * 式列 -> [左括弧] 式 {"," 式} [右括弧]
  * @author hayas
  *
  */
@@ -31,7 +31,7 @@ public class Expressions extends Argument {
 		return (Expressions) super.setParent(parent);
 	}
 
-	public Expressions setChildren(final Paren leftParen, final List<MainExpression> expressions, final Paren rightParen) {
+	public Expressions setChildren(final Paren leftParen, final List<Expression> expressions, final Paren rightParen) {
 		setLeftParen(leftParen);
 		setExpressions(expressions);
 		setRightParen(rightParen);
@@ -44,7 +44,7 @@ public class Expressions extends Argument {
 		final String leftParen = hasLeftParen()? getLeftParen().toString(): "";
 		final String row = getExpressions()
 				.stream()
-				.map(MainExpression::toString)
+				.map(Expression::toString)
 				.collect(Collectors.joining(Separator.COMMA + " "));
 		final String rightParen = hasRightParen()? getRightParen().toString(): "";
 
@@ -56,13 +56,13 @@ public class Expressions extends Argument {
 		final Expressions expressions = new Expressions();
 
 		final Paren leftParen = hasLeftParen()? getLeftParen().clone(): null;
-		final List<MainExpression> mainExpressions = getExpressions()
+		final List<Expression> Expressions = getExpressions()
 				.stream()
 				.map(exp -> exp.copySubEt(expressions))
 				.collect(Collectors.toList());
 		final Paren rightParen = hasRightParen()? getRightParen().clone(): null;
 
-		return expressions.setParent(parent).setChildren(leftParen, mainExpressions, rightParen);
+		return expressions.setParent(parent).setChildren(leftParen, Expressions, rightParen);
 	}
 
 	public boolean hasLeftParen() {
@@ -82,11 +82,11 @@ public class Expressions extends Argument {
 		return this;
 	}
 
-	public List<MainExpression> getExpressions() {
-		return super.getChildren().downCast(MainExpression.class);
+	public List<Expression> getExpressions() {
+		return super.getChildren().downCast(Expression.class);
 	}
 
-	public Expressions setExpressions(final List<MainExpression> expressions) {
+	public Expressions setExpressions(final List<Expression> expressions) {
 		if(expressions!=null && !expressions.isEmpty()) {
 			super.setChildrenNodes(expressions.toArray(new EtNode[expressions.size()]));
 		} else {
@@ -116,7 +116,7 @@ public class Expressions extends Argument {
 		return getExpressions().size();
 	}
 
-	public MainExpression getArgument() {
+	public Expression getArgument() {
 		if(getArgumentNum() == 1) {
 			return getExpressions().get(0);
 		} else {

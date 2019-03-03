@@ -4,10 +4,8 @@ import tree.Condition;
 import tree.DigitConstant;
 import tree.Expression;
 import tree.Expressions;
-import tree.ParenedExpression;
 import tree.Function;
-import tree.MainExpression;
-import tree.MainTerm;
+import tree.ParenedExpression;
 import tree.PowerFactor;
 import tree.Term;
 import tree.Variable;
@@ -29,14 +27,6 @@ public abstract class EtVisitor {
 	}
 
 	public boolean leave(final Condition node) {
-		return true;
-	}
-
-	public boolean visit(final MainExpression node) {
-		return true;
-	}
-
-	public boolean leave(final MainExpression node) {
 		return true;
 	}
 
@@ -109,14 +99,6 @@ public abstract class EtVisitor {
 	}
 
 	public boolean leave(final Expressions node) {
-		return true;
-	}
-
-	public boolean visit(final MainTerm node) {
-		return true;
-	}
-
-	public boolean leave(final MainTerm node) {
 		return true;
 	}
 

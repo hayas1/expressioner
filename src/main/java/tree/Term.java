@@ -1,25 +1,31 @@
 package tree;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import token.Dummy;
 import token.Operator;
 import visitor.EtVisitor;
 
 /**
  * @author hayas
- * 項 = 累乗因子 [[乗法演算子] 項]
+ * 項 = 累乗因子 {[乗法演算子] 累乗因子}
  *
  */
 public class Term extends EtNode {
 	private static final int POWER_FACTOR = 0;
-	private Operator operator;
-	private static final int TERM = 1;
-
+	private Operator additiveOperator;
+	private static final int POWER_FACTORS_BEGIN = 1;
+	private int powerFactorsSize = 0;
 
 	@Override
 	public boolean accept(final EtVisitor visitor) {
 		if(visitor.visit(this)) {
 			getPowerFactor().accept(visitor);
-			if(hasTerm()) {
-				getTerm().accept(visitor);
+			if(hasPowerFactors()) {
+				getPowerFactors().forEach(pow -> pow.accept(visitor));
 			}
 		}
 		return visitor.leave(this);
@@ -30,181 +36,99 @@ public class Term extends EtNode {
 		return (Term) super.setParent(parent);
 	}
 
-	public Term setChildren(final PowerFactor factor, final Operator operator, final Term term) {
-		setPowerFactor(factor);
-		setOperator(operator);
-		setTerm(term);
+	public Term setChildren(final PowerFactor powerFactor, final List<PowerFactor> powerFactors) {
+		setPowerFactor(powerFactor);
+		setPowerFactors(powerFactors);
 
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		if(hasOperator() && hasTerm()) {
-			return getPowerFactor().toString() + getOperator().toString() + getTerm().toString();
-		} else if(!hasOperator() && hasTerm()) {
-			return getPowerFactor().toString() + Operator.TIMES + getTerm().toString();
-		} else {
+		if(!hasPowerFactors()) {
 			return getPowerFactor().toString();
+		} else {
+			final String powerFactor = getPowerFactor().toString();
+			final String powerFactors = getPowerFactors()
+					.stream()
+					.map(pow -> pow.getMultiplicativeOperatorString() + pow.toString())
+					.collect(Collectors.joining());
+
+			return powerFactor + powerFactors;
 		}
 	}
 
 	@Override
 	public Term copySubEt(final EtNode parent) {
-		final Term term = new Term();
+		final Term term = new Term().setAdditiveOperator(getAdditiveOperator().clone());
 
-		final PowerFactor factor = getPowerFactor().copySubEt(term);
-		final Operator operator = hasOperator()? getOperator().clone(): null;
-		final Term postTerm = hasTerm()? getTerm().copySubEt(term): null;
+		final PowerFactor powerFactor = getPowerFactor().copySubEt(term);
+		final List<PowerFactor> powerFactors;
+		if(!hasPowerFactors()) {
+			powerFactors = Collections.emptyList();
+		} else {
+			powerFactors = getPowerFactors()
+					.stream()
+					.map(pow -> pow.copySubEt(term))
+					.collect(Collectors.toList());
+		}
 
-		return term.setParent(parent).setChildren(factor, operator, postTerm);
+		return term.setParent(parent).setChildren(powerFactor, powerFactors);
+	}
+
+	public String getAdditiveOperatorString() {
+		if(hasAdditiveOperator()) {
+			return getAdditiveOperator().toString();
+		} else {
+			return Dummy.DUMMY;
+		}
+	}
+
+	public boolean hasAdditiveOperator() {
+		return getAdditiveOperator() != null;
+	}
+
+	public Operator getAdditiveOperator() {
+		return additiveOperator;
+	}
+
+	public Term setAdditiveOperator(final Operator additiveOperator) {
+		if(additiveOperator==null || additiveOperator.isAdditiveOperator()) {
+			this.additiveOperator = additiveOperator;
+		} else {
+			throw new NodeTypeException("it s not additive operator: " + additiveOperator.toString());
+		}
+		return this;
 	}
 
 	public PowerFactor getPowerFactor() {
 		return (PowerFactor)super.getChild(POWER_FACTOR);
 	}
 
-	public Term setPowerFactor(final PowerFactor factor) {
-		if(factor != null) {
-			super.setChild(POWER_FACTOR, factor);
+	public Term setPowerFactor(final PowerFactor powerFactor) {
+		if(powerFactor != null) {
+			super.setChild(POWER_FACTOR, powerFactor);
 		} else {
 			throw new NodeTypeException("don't allow null factor");
 		}
 		return this;
 	}
 
-	public boolean hasOperator() {
-		final boolean hasOperator = getOperator()!=null;
-		final boolean hasTerm = getTerm()!=null;
-		if(hasOperator && !hasTerm) {
-			throw new NodeTypeException("invalid term type: powerFactor operator null");
-		} else {
-			return hasOperator;
-		}
+	public boolean hasPowerFactors() {
+		return powerFactorsSize != 0;
 	}
 
-	public Operator getOperator() {
-		return operator;
+	public List<PowerFactor> getPowerFactors() {
+		return super.getChildren(POWER_FACTORS_BEGIN, powerFactorsSize).downCast(PowerFactor.class);
 	}
 
-	public Term setOperator(final Operator operator) {
-		if(operator==null || operator.isMultiplicativeOperator()) {
-			this.operator = operator;
-		} else {
-			throw new NodeTypeException("not multiplicative operator: " + operator.getName());
-		}
-		return this;
-	}
-
-	public boolean hasTerm() {
-		final boolean hasOperator = getOperator()!=null;
-		final boolean hasTerm = getTerm()!=null;
-		if(hasOperator && !hasTerm) {
-			throw new NodeTypeException("invalid term type: powerFactor operator null");
-		} else {
-			return hasTerm;
-		}
-	}
-
-	public Term getTerm() {
-		return (Term)super.getChild(TERM);
-	}
-
-	public Term setTerm(final Term term) {
-		super.setChild(TERM, term);
+	public Term setPowerFactors(final List<PowerFactor> powerFactors) {
+		final List<PowerFactor> list = Optional.ofNullable(powerFactors).orElse(Collections.emptyList());
+		powerFactorsSize = list.size();
+		super.setChildren(POWER_FACTORS_BEGIN, list);
 		return this;
 	}
 
 
-	public boolean isTimes() {
-		if(hasOperator()) {
-			return getOperator().isTimes();
-		} else {
-			return hasTerm();
-		}
-	}
-
-	public boolean isDivide() {
-		if(hasOperator()) {
-			return getOperator().isDivide();
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * 親が未設定の累乗因子ノードから、そのノードのみを子にもち親が未設定の新たな項のノードを作成する
-	 * 注：このメソッドは木を組み替えるので木の探索中に使用すべきではない
-	 * @param powerFactor 親が未設定の累乗因子
-	 * @return 作成したノード
-	 */
-	public static Term makeNode(final PowerFactor factor) {
-		if(factor.getParent()!=null) {
-			throw new NodeTypeException("term child must have null parent");
-		}
-
-		final Term term = new Term();
-		term.setPowerFactor(factor.setParent(term));
-
-		return term;
-	}
-
-	public Term getDeepestTerm() {
-		Term downer;
-		for(downer = this; downer.hasTerm(); downer = downer.getTerm());
-		return downer;
-	}
-
-	/**
-	 * 親が未設定の項ノードとの掛け算を行う
-	 * つまり、この項の再帰的な子の項のうち、最も子の項の子を持たない項の子に引数の項を設定する
-	 * 注：このメソッドは木を組み替えるので木の探索中に使用すべきではない
-	 * @param term 親が未設定の項
-	 * @return このノード
-	 */
-	public Term times(final Term term) {
-		if(term.getParent()!=null) {
-			throw new NodeTypeException("times operand term must have null parent");
-		}
-
-		final Term deepest = getDeepestTerm();
-		deepest.setTerm(term.setParent(deepest));
-
-		return this;
-	}
-
-	/**
-	 * 親が未設定の主項ノードとの割り算を行う
-	 * つまり、この項の再帰的な子の項のうち、最も子の項の子を持たない項の子に除算記号と引数の項を設定する
-	 * 注：このメソッドは木を組み替えるので木の探索中に使用すべきではない
-	 * @param factor 親が未設定の累乗因子
-	 * @return このノード
-	 */
-	public Term divide(final Term term) {
-		if(term.getParent()!=null) {
-			throw new NodeTypeException("divide operand term must have null parent");
-		}
-
-		final Term deepest = getDeepestTerm();
-		deepest.setOperator(Operator.create(Operator.DIVIDE)).setTerm(term.setParent(deepest));
-
-		return this;
-	}
-
-	public Term times(final PowerFactor factor) {
-		if(factor.getParent()!=null) {
-			throw new NodeTypeException("times operand power factor must have null parent");
-		}
-
-		return this.times(makeNode(factor));
-	}
-
-	public Term divide(final PowerFactor factor) {
-		if(factor.getParent()!=null) {
-			throw new NodeTypeException("divide operand power factor must have null parent");
-		}
-
-		return this.divide(makeNode(factor));
-	}
 
 }

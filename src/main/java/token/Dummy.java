@@ -1,6 +1,7 @@
 package token;
 
 public class Dummy extends Token {
+	public static final String DUMMY = "";
 
 	protected Dummy() {
 		super("");

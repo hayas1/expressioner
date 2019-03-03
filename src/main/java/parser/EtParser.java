@@ -25,8 +25,6 @@ import tree.Expression;
 import tree.Expressions;
 import tree.Factor;
 import tree.Function;
-import tree.MainExpression;
-import tree.MainTerm;
 import tree.ParenedExpression;
 import tree.PowerFactor;
 import tree.Term;
@@ -34,16 +32,14 @@ import tree.Variable;
 import tree.VariableConstant;
 
 /**
- * ・条件 -> 主式 関係演算子 主式 <br>
- * ・主式 -> [符号] 式 <br>
- * ・式 -> 主項 [加法演算子 式] <br>
- * ・主項 -> 項 <br>
- * ・項 -> 累乗因子 [[乗法演算子] 項] <br>
- * ・累乗因子 -> 因子 [累乗演算子 累乗因子] <br>
+ * ・条件 -> 式 関係演算子 式 <br>
+ * ・式 -> [符号] 項 {加法演算子 項} <br>
+ * ・項 -> 累乗因子 {[乗法演算子] 累乗因子} <br>
+ * ・累乗因子 -> 因子 {累乗演算子 因子} <br>
  * ・因子 -> 変数|定数|括弧式|関数 <br>
  * ・定数 -> 文字定数|数字定数 <br>
  * ・数字定数 -> 数字[.数字] <br>
- * ・括弧式 -> 左括弧 主式 右括弧 <br>
+ * ・括弧式 -> 左括弧 式 右括弧 <br>
  * ・関数 -> 関数名 ['] 引数 <br>
  * ・引数 -> 累乗因子|式列 <br>
  * ・式列 -> 左括弧 主式{"," 主式} 右括弧 <br>
@@ -82,17 +78,6 @@ public class EtParser {
 		}
 	}
 
-	public MainExpression createMainExpressionEt() {
-		final MainExpression mainExpression = mainExpression(null);
-
-		if(!hasNextToken()) {
-			return mainExpression;
-		} else {
-			throw new SyntaxException("not main expression, unexpected token: ", iterator.next());
-		}
-
-	}
-
 	public Expression createExpressionEt() {
 		final Expression expression = expression(null);
 
@@ -100,16 +85,6 @@ public class EtParser {
 			return expression;
 		} else {
 			throw new SyntaxException("not expression, unexpected token: ", iterator.next());
-		}
-	}
-
-	public MainTerm createMainTermEt() {
-		final MainTerm term = mainTerm(null);
-
-		if(!hasNextToken()) {
-			return term;
-		} else {
-			throw new SyntaxException("not term, unexpected token: ", iterator.next());
 		}
 	}
 
@@ -224,13 +199,13 @@ public class EtParser {
 
 
 
-	//condition() -> mainExpression() relationalOperator() mainExpression()
+	//condition() -> expression() relationalOperator() expression()
 	protected Condition condition(final EtNode parent) {
 		final Condition condition = new Condition();
 
-		final MainExpression leftHandSide = mainExpression(condition);
+		final Expression leftHandSide = expression(condition);
 		final Operator relationalOperator = relationalOperator();
-		final MainExpression rightHandSide = mainExpression(condition);
+		final Expression rightHandSide = expression(condition);
 
 		return condition.setParent(parent).setChildren(leftHandSide, relationalOperator, rightHandSide);
 	}
@@ -244,19 +219,25 @@ public class EtParser {
 	}
 
 
-	//mainExpression() -> [sign()] expression()
-	protected MainExpression mainExpression(final EtNode parent) {
-		final MainExpression mainExpression = new MainExpression();
+	//mainExpression() -> [sign()] term() {additiveOperator() term()}
+	protected Expression expression(final EtNode parent) {
+		final Expression expression = new Expression();
 
 		Operator sign = null;
 		if(getCurrentToken().isSignOperator()) {
 			sign = sign();
 		}
 
-		final Expression expression = expression(mainExpression);
+		final Term term = term(expression);
+
+		final List<Term> terms = new ArrayList<>();
+		while(getCurrentToken().isAdditiveOperator()) {
+			final Operator additiveOperator = additiveOperator();
+			terms.add(term(expression).setAdditiveOperator(additiveOperator));
+		}
 
 
-		return mainExpression.setParent(parent).setChildren(sign,expression);
+		return expression.setParent(parent).setChildren(sign, term, terms);
 	}
 
 	protected Operator sign() {
@@ -267,22 +248,6 @@ public class EtParser {
 		}
 	}
 
-	//expression() -> mainTerm() [additiveOperator() expression()]
-	protected Expression expression(final EtNode parent) {
-		final Expression expression = new Expression();
-
-		final MainTerm mainTerm = mainTerm(expression);
-
-		Operator additiveOperator = null;
-		Expression postExpression = null;
-		if(getCurrentToken().isAdditiveOperator()) {
-			additiveOperator = additiveOperator();
-			postExpression = expression(expression);
-		}
-
-		return expression.setParent(parent).setChildren(mainTerm, additiveOperator, postExpression);
-	}
-
 	protected Operator additiveOperator() {
 		if(getCurrentToken().isAdditiveOperator()) {
 			return (Operator)getCurrentReadNext();
@@ -291,32 +256,23 @@ public class EtParser {
 		}
 	}
 
-	//mainTerm() -> term()
-	protected MainTerm mainTerm(final EtNode parent) {
-		final MainTerm mainTerm = new MainTerm();
-
-		final Term term = term(mainTerm);
-
-		return mainTerm.setParent(parent).setChildren(term);
-	}
-
-	//term() -> powerfactor() [[multiplicativeOperator()] term()]
+	//term() -> powerFactor() {[multiplicativeOperator()] powerFactor()}
 	protected Term term(final EtNode parent) {
 		final Term term = new Term();
 
 		final PowerFactor factor = powerFactor(term);
 
-		Operator multiplicativeOperator = null;
-		Term postTerm = null;
-		if(getCurrentToken().isFactorBeginnable()) {		//term start with factor
-			postTerm = term(term);
-		} else if(getCurrentToken().isMultiplicativeOperator()) {
-			multiplicativeOperator = multiplicativeOperator();
-			postTerm = term(term);
+		final List<PowerFactor> powerFactors = new ArrayList<>();
+		while(getCurrentToken().isMultiplicativeOperator() || getCurrentToken().isFactorBeginnable()) {
+			Operator multiplicativeOperator = null;
+			if(getCurrentToken().isMultiplicativeOperator()) {
+				multiplicativeOperator = multiplicativeOperator();
+			}
+			powerFactors.add(powerFactor(term).setMultiplicativeOperator(multiplicativeOperator));
 		}
 
 
-		return term.setParent(parent).setChildren(factor, multiplicativeOperator, postTerm);
+		return term.setParent(parent).setChildren(factor, powerFactors);
 	}
 
 	protected Operator multiplicativeOperator() {
@@ -327,20 +283,19 @@ public class EtParser {
 		}
 	}
 
-	//powerFactor() -> factor() [ powerOperator() powerFactor()]
+	//powerFactor() -> factor() {powerOperator() factor()}
 	protected PowerFactor powerFactor(final EtNode parent) {
 		final PowerFactor powerFactor = new PowerFactor();
 
 		final Factor factor = factor(powerFactor);
 
-		Operator powerOperator = null;
-		PowerFactor power = null;
-		if(getCurrentToken().isPower()) {
-			powerOperator = powerOperator();
-			power = powerFactor(powerFactor);
+		final List<Factor> factors = new ArrayList<>();
+		while(getCurrentToken().isPower()) {
+			final Operator powerOperator = powerOperator();
+			factors.add(factor(powerFactor).setPowerOperator(powerOperator));
 		}
 
-		return powerFactor.setParent(parent).setChildren(factor, powerOperator, power);
+		return powerFactor.setParent(parent).setChildren(factor, factors);
 	}
 
 	protected Operator powerOperator() {
@@ -450,7 +405,7 @@ public class EtParser {
 		final ParenedExpression factorExpression = new ParenedExpression();
 
 		final Paren leftParen = leftParen();
-		final MainExpression expression = mainExpression(factorExpression);
+		final Expression expression = expression(factorExpression);
 		final Paren rightParen = rightParen();
 
 		return factorExpression.setParent(parent).setChildren(leftParen, expression, rightParen);
@@ -522,14 +477,14 @@ public class EtParser {
 	//expressions() -> leftParen() expression() {, expression()}  rightParen()
 	protected Expressions expressions(final EtNode parent) {
 		final Expressions expressions = new Expressions();
-		final List<MainExpression> expressionList = new ArrayList<>();
+		final List<Expression> expressionList = new ArrayList<>();
 
 		final Paren leftParen = leftParen();
-		expressionList.add(mainExpression(expressions));
+		expressionList.add(expression(expressions));
 
 		while(getCurrentToken().isComma()) {
 			comma();
-			expressionList.add(mainExpression(expressions));
+			expressionList.add(expression(expressions));
 		}
 
 		final Paren rightParen = rightParen();

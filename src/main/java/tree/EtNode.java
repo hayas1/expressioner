@@ -1,5 +1,7 @@
 package tree;
 
+import java.util.List;
+
 import visitor.EtVisitor;
 
 public abstract class EtNode {
@@ -32,6 +34,10 @@ public abstract class EtNode {
 		return this.children;
 	}
 
+	public EtNodeList getChildren(final int beginIndex, final int size) {
+		return this.children.subList(beginIndex, beginIndex + size);
+	}
+
 	public EtNode getChild(final int index) {
 		return getChildren().get(index);
 	}
@@ -43,6 +49,14 @@ public abstract class EtNode {
 
 	public EtNode setChild(final int index, final EtNode child) {
 		this.children.set(index, child);
+		return this;
+	}
+
+	public <T extends EtNode> EtNode setChildren(final int beginIndex, final List<T> nodes) {
+		for(int i = 0; i < nodes.size(); i++) {
+			this.children.set(beginIndex+i, nodes.get(i));
+		}
+
 		return this;
 	}
 

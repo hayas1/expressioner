@@ -1,26 +1,33 @@
 package tree;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import token.Operator;
 import visitor.EtVisitor;
 
 /**
  *
- * 累乗因子 -> 因子 [累乗演算子 累乗因子]
+ * 累乗因子 -> 因子 {累乗演算子 累乗因子}
  * @author hayas
  *
  */
 public class PowerFactor extends Argument {
 	private static final int FACTOR = 0;
-	private Operator operator;
-	private static final int POWER_FACTOR = 1;
+	private Operator multiplicativeOperator;
+	private static final int FACTORS_BEGIN = 1;
+
+	private int factorsSize = 0;
 
 
 	@Override
 	public boolean accept(final EtVisitor visitor) {
 		if(visitor.visit(this)) {
 			getFactor().accept(visitor);
-			if(hasOperator()) {
-				getPowerFactor().accept(visitor);
+			if(hasFactors()) {
+				getFactors().forEach(fac -> fac.accept(visitor));
 			}
 		}
 
@@ -32,20 +39,24 @@ public class PowerFactor extends Argument {
 		return (PowerFactor) super.setParent(parent);
 	}
 
-	public PowerFactor setChildren(final Factor factor, final Operator operator, final PowerFactor powerFactor) {
+	public PowerFactor setChildren(final Factor factor, final List<Factor> factors) {
 		setFactor(factor);
-		setOperator(operator);
-		setPowerFactor(powerFactor);
+		setFactors(factors);
 
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		if(hasOperator()) {
-			return getFactor().toString() + getOperator().toString() + getPowerFactor().toString();
-		} else {
+		if(!hasFactors()) {
 			return getFactor().toString();
+		} else {
+			final String factor = getFactor().toString();
+			final String factors = getFactors()
+					.stream()
+					.map(fac -> fac.getPowerOperatorString() + fac.toString())
+					.collect(Collectors.joining());
+			return factor + factors;
 		}
 	}
 
@@ -54,10 +65,17 @@ public class PowerFactor extends Argument {
 		final PowerFactor powerFactor = new PowerFactor();
 
 		final Factor factor = getFactor().copySubEt(powerFactor);
-		final Operator operator = hasOperator()? getOperator().clone(): null;
-		final PowerFactor power = hasOperator()? getPowerFactor().copySubEt(powerFactor): null;
+		final List<Factor> factors;
+		if(!hasFactors()) {
+			factors = Collections.emptyList();
+		} else {
+			factors = getFactors()
+					.stream()
+					.map(fac -> fac.copySubEt(powerFactor))
+					.collect(Collectors.toList());
+		}
 
-		return powerFactor.setParent(parent).setChildren(factor, operator, power);
+		return powerFactor.setParent(parent).setChildren(factor, factors);
 	}
 
 	public Factor getFactor() {
@@ -73,37 +91,43 @@ public class PowerFactor extends Argument {
 		return this;
 	}
 
-	public boolean hasOperator() {
-		final boolean hasOperator = getOperator()!=null;
-		final boolean hasPowerFactor = getPowerFactor()!=null;
-		if(hasOperator && !hasPowerFactor) {
-			throw new NodeTypeException("invalid power factor type: factor powerOperator null");
-		} else if(!hasOperator && hasPowerFactor) {
-			throw new NodeTypeException("invalid power factor type: factor null powerFactor");
+	public String getMultiplicativeOperatorString() {
+		if(hasMultiplicativeOperator()) {
+			return getMultiplicativeOperator().toString();
 		} else {
-			return hasOperator;
+			return Operator.TIMES;
 		}
 	}
 
-	public Operator getOperator() {
-		return operator;
+	public boolean hasMultiplicativeOperator() {
+		return getMultiplicativeOperator() != null;
 	}
 
-	public PowerFactor setOperator(final Operator operator) {
-		if(operator==null || operator.isPower()) {
-			this.operator = operator;
+	public Operator getMultiplicativeOperator() {
+		return multiplicativeOperator;
+	}
+
+	public PowerFactor setMultiplicativeOperator(final Operator multiplicativeOperator) {
+		if(multiplicativeOperator==null || multiplicativeOperator.isMultiplicativeOperator()) {
+			this.multiplicativeOperator = multiplicativeOperator;
 		} else {
-			throw new NodeTypeException("not power operator: " + operator.getName());
+			throw new NodeTypeException("it s not multiplicative operator: " + multiplicativeOperator.toString());
 		}
 		return this;
 	}
 
-	public PowerFactor getPowerFactor() {
-		return (PowerFactor)super.getChild(POWER_FACTOR);
+	public boolean hasFactors() {
+		return factorsSize != 0;
 	}
 
-	public PowerFactor setPowerFactor(PowerFactor powerFactor) {
-		super.setChild(POWER_FACTOR, powerFactor);
+	public List<Factor> getFactors() {
+		return super.getChildren(FACTORS_BEGIN, factorsSize).downCast(Factor.class);
+	}
+
+	public PowerFactor setFactors(List<Factor> factors) {
+		final List<Factor> list = Optional.ofNullable(factors).orElse(Collections.emptyList());
+		factorsSize = list.size();
+		super.setChildren(FACTORS_BEGIN, list);
 		return this;
 	}
 
@@ -114,12 +138,12 @@ public class PowerFactor extends Argument {
 	 * @param nodeTypeB 指数の型
 	 * @return 判定結果
 	 */
-	public boolean isFactorPowFacor(final Factor nodeTypeA, final Factor nodeTypeB) {
-		if(hasOperator()) {
-			return getFactor().isSameNodeType(nodeTypeA) && getPowerFactor().isSameNodeType(nodeTypeB);
-		} else {
-			return false;
-		}
-	}
+//	public boolean isFactorPowFacor(final Factor nodeTypeA, final Factor nodeTypeB) {
+//		if(hasOperator()) {
+//			return getFactor().isSameNodeType(nodeTypeA) && getFactors().isSameNodeType(nodeTypeB);
+//		} else {
+//			return false;
+//		}
+//	}
 
 }

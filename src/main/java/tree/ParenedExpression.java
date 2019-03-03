@@ -5,7 +5,7 @@ import visitor.EtVisitor;
 
 /**
  *
- * 括弧式 -> 左括弧 主式 右括弧
+ * 括弧式 -> 左括弧 式 右括弧
  * @author hayas
  *
  */
@@ -28,7 +28,7 @@ public class ParenedExpression extends Factor {
 		return (ParenedExpression)super.setParent(parent);
 	}
 
-	public ParenedExpression setChildren(final Paren leftParen, final MainExpression expression, final Paren rightParen) {
+	public ParenedExpression setChildren(final Paren leftParen, final Expression expression, final Paren rightParen) {
 		setLeftParen(leftParen);
 		setExpression(expression);
 		setRightParen(rightParen);
@@ -46,10 +46,10 @@ public class ParenedExpression extends Factor {
 		final ParenedExpression parenedExpression = new ParenedExpression();
 
 		final Paren leftParen = getLeftParen().clone();
-		final MainExpression mainExpression = getExpression().copySubEt(parenedExpression);
+		final Expression Expression = getExpression().copySubEt(parenedExpression);
 		final Paren rightParen = getRightParen().clone();
 
-		return parenedExpression.setParent(parent).setChildren(leftParen, mainExpression, rightParen);
+		return parenedExpression.setParent(parent).setChildren(leftParen, Expression, rightParen);
 	}
 
 	public Paren getLeftParen() {
@@ -65,11 +65,11 @@ public class ParenedExpression extends Factor {
 		return this;
 	}
 
-	public MainExpression getExpression() {
-		return (MainExpression)super.getChild(MAIN_EXPRESSION);
+	public Expression getExpression() {
+		return (Expression)super.getChild(MAIN_EXPRESSION);
 	}
 
-	public ParenedExpression setExpression(final MainExpression expression) {
+	public ParenedExpression setExpression(final Expression expression) {
 		if(expression != null) {
 			super.setChild(MAIN_EXPRESSION, expression);
 		} else {
@@ -127,20 +127,6 @@ public class ParenedExpression extends Factor {
 		return getParentElement().isSameNodeType(getChildElement());
 	}
 
-	//TODO 掛け算とか全部作ってから作り直し
-	public void removeParen(/*final boolean isPostive, final boolean isNumerator*/) {
-
-
-		if(parenRemovable() && isPostive) {
-			getParentElement().replace(getChildElement());
-		} else if(parenRemovable() && !isPostive) {
-			final EtNode child = getChildElement();
-			child.accept(reverser);
-			getParentElement().replace(child);
-		} else {
-			throw new NodeTypeException("don't removable paren");
-		}
-	}
 
 
 

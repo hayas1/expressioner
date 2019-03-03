@@ -3,6 +3,7 @@ package tree;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,10 @@ public class EtNodeList extends AbstractList<EtNode> {
 
 	public EtNodeList(final EtNode... nodes) {
 		this.nodes = Arrays.asList(nodes);
+	}
+
+	public EtNodeList(final Collection<? extends EtNode> collection) {
+		this.nodes = new ArrayList<>(collection);
 	}
 
 	@Override
@@ -65,6 +70,11 @@ public class EtNodeList extends AbstractList<EtNode> {
 				.collect(Collectors.joining());
 	}
 
+	@Override
+	public EtNodeList subList(int fromIndex, int toIndex) {
+		return new EtNodeList(nodes.subList(fromIndex, toIndex));
+	}
+
 	public boolean nullPudding(final int index) {
 		if(index < nodes.size()) {
 			return false;
@@ -74,6 +84,11 @@ public class EtNodeList extends AbstractList<EtNode> {
 			}
 			return true;
 		}
+	}
+
+	public EtNodeList insert(final int index, final EtNode element) {
+		add(index, element);
+		return this;
 	}
 
 
